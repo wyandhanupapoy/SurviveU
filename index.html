@@ -1,0 +1,2519 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SurviveU - Manajemen Keuangan Mahasiswa</title>
+
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js">
+    </script>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js">
+    </script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js">
+    </script>
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #111118;
+            --bg-card: #16161f;
+            --bg-glass: rgba(22, 22, 31, 0.75);
+            --bg-glass-hover: rgba(28, 28, 40, 0.85);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-active: rgba(255, 255, 255, 0.12);
+            --text-primary: #e8e8f0;
+            --text-secondary: #a0a0b8;
+            --text-muted: #6b6b80;
+            --accent: #6c5ce7;
+            --accent-glow: rgba(108, 92, 231, 0.35);
+            --accent-light: #a29bfe;
+            --success: #00d2a0;
+            --success-glow: rgba(0, 210, 160, 0.3);
+            --warning: #f9a825;
+            --warning-glow: rgba(249, 168, 37, 0.35);
+            --danger: #ff5252;
+            --danger-glow: rgba(255, 82, 82, 0.35);
+            --info: #448aff;
+            --radius-sm: 8px;
+            --radius: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 24px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 30px var(--accent-glow);
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            --sidebar-w: 260px;
+            --bottom-nav-h: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 15px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+        }
+
+        /* ========== GLASS CARD ========== */
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            transition: var(--transition);
+        }
+
+        .glass:hover {
+            border-color: var(--border-active);
+            background: var(--bg-glass-hover);
+        }
+
+        .glass-sm {
+            background: var(--bg-glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+
+        /* ========== LAYOUT ========== */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform var(--transition);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-w);
+            padding: 20px 24px 100px;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--bottom-nav-h);
+            background: var(--bg-glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--border);
+            z-index: 200;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 8px;
+        }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--accent-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: var(--radius);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .sidebar-nav li a:hover,
+        .sidebar-nav li a.active {
+            background: rgba(108, 92, 231, 0.12);
+            color: var(--text-primary);
+        }
+
+        .sidebar-nav li a.active {
+            background: rgba(108, 92, 231, 0.2);
+            font-weight: 600;
+        }
+
+        .sidebar-nav li a i {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-user {
+            margin-top: auto;
+            padding: 14px;
+            border-radius: var(--radius);
+            background: var(--bg-glass);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .sidebar-user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-user-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .sidebar-user-info .name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-user-info .role {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* ========== BOTTOM NAV ========== */
+        .bottom-nav a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.65rem;
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+            min-width: 48px;
+        }
+
+        .bottom-nav a.active {
+            color: var(--accent-light);
+        }
+
+        .bottom-nav a i {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* ========== HEADER ========== */
+        .page-header {
+            margin-bottom: 20px;
+        }
+
+        .page-header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .page-header .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* ========== STATUS BADGE ========== */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 0.3px;
+            animation: pulse-badge 2.5s ease-in-out infinite;
+        }
+
+        .status-aman {
+            background: rgba(0, 210, 160, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(0, 210, 160, 0.3);
+        }
+
+        .status-waspada {
+            background: rgba(249, 168, 37, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(249, 168, 37, 0.3);
+        }
+
+        .status-kritis {
+            background: rgba(255, 130, 40, 0.18);
+            color: #ff8230;
+            border: 1px solid rgba(255, 130, 40, 0.35);
+        }
+
+        .status-bangkrut {
+            background: rgba(255, 82, 82, 0.2);
+            color: var(--danger);
+            border: 1px solid rgba(255, 82, 82, 0.4);
+            animation: pulse-danger 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.75;
+            }
+        }
+
+        @keyframes pulse-danger {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 var(--danger-glow);
+            }
+
+            50% {
+                box-shadow: 0 0 18px 6px var(--danger-glow);
+            }
+        }
+
+        /* ========== CARDS GRID ========== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            padding: 16px 18px;
+            border-radius: var(--radius-lg);
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+            cursor: default;
+        }
+
+        .stat-card:hover {
+            border-color: var(--border-active);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-card .card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .stat-card .card-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+        }
+
+        .stat-card .card-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-top: 2px;
+            letter-spacing: -0.3px;
+        }
+
+        .stat-card .card-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .icon-purple {
+            background: rgba(108, 92, 231, 0.2);
+            color: var(--accent-light);
+        }
+
+        .icon-green {
+            background: rgba(0, 210, 160, 0.2);
+            color: var(--success);
+        }
+
+        .icon-orange {
+            background: rgba(249, 168, 37, 0.2);
+            color: var(--warning);
+        }
+
+        .icon-red {
+            background: rgba(255, 82, 82, 0.2);
+            color: var(--danger);
+        }
+
+        .icon-blue {
+            background: rgba(68, 138, 255, 0.2);
+            color: var(--info);
+        }
+
+        /* ========== PROGRESS BAR ========== */
+        .progress-wrap {
+            margin: 6px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .fill-success {
+            background: linear-gradient(90deg, #00d2a0, #00e6b0);
+        }
+
+        .fill-warning {
+            background: linear-gradient(90deg, #f9a825, #ffb340);
+        }
+
+        .fill-danger {
+            background: linear-gradient(90deg, #ff5252, #ff6e6e);
+        }
+
+        .fill-accent {
+            background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+        }
+
+        /* ========== BUTTONS ========== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            letter-spacing: 0.2px;
+            text-decoration: none;
+            font-family: var(--font);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: #7c6df0;
+            box-shadow: 0 6px 24px var(--accent-glow);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border-active);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent-light);
+        }
+
+        .btn-sm {
+            padding: 6px 13px;
+            font-size: 0.75rem;
+            border-radius: 50px;
+        }
+
+        .btn-danger-sm {
+            background: rgba(255, 82, 82, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-success-sm {
+            background: rgba(0, 210, 160, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(0, 210, 160, 0.3);
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* ========== TABLE ========== */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        table th,
+        table td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .text-success {
+            color: var(--success);
+        }
+
+        .text-danger {
+            color: var(--danger);
+        }
+
+        .text-warning {
+            color: var(--warning);
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        /* ========== FORMS ========== */
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="email"],
+        input[type="password"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            font-family: var(--font);
+            font-size: 0.85rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.08);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a0a0b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        /* ========== MODAL ========== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            width: 92%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.25s ease;
+        }
+
+        .modal h3 {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            letter-spacing: -0.2px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 18px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== TOAST ========== */
+        .toast-container {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast {
+            pointer-events: auto;
+            padding: 12px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            animation: toastIn 0.35s ease, toastOut 0.35s ease 2.5s forwards;
+            box-shadow: var(--shadow);
+            max-width: 360px;
+        }
+
+        .toast-success {
+            background: rgba(0, 210, 160, 0.2);
+            color: var(--success);
+        }
+
+        .toast-warning {
+            background: rgba(249, 168, 37, 0.2);
+            color: var(--warning);
+        }
+
+        .toast-danger {
+            background: rgba(255, 82, 82, 0.2);
+            color: var(--danger);
+        }
+
+        .toast-info {
+            background: rgba(68, 138, 255, 0.2);
+            color: var(--info);
+        }
+
+        @keyframes toastIn {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
+
+        /* ========== CHART CONTAINER ========== */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            max-height: 300px;
+        }
+
+        /* ========== EMPTY STATE ========== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            width: 48px;
+            height: 48px;
+            opacity: 0.4;
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+
+        /* ========== ALERT BANNER ========== */
+        .alert-banner {
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .alert-danger {
+            background: rgba(255, 82, 82, 0.12);
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            color: #ff6e6e;
+        }
+
+        .alert-warning {
+            background: rgba(249, 168, 37, 0.12);
+            border: 1px solid rgba(249, 168, 37, 0.3);
+            color: #ffb340;
+        }
+
+        .alert-info {
+            background: rgba(68, 138, 255, 0.1);
+            border: 1px solid rgba(68, 138, 255, 0.25);
+            color: #6aa0ff;
+        }
+
+        /* ========== AUTH SCREEN ========== */
+        .auth-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 32px 28px;
+            border-radius: var(--radius-xl);
+            background: var(--bg-glass);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .auth-card h2 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .auth-card .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-bottom: 20px;
+        }
+
+        .auth-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px 12px 100px;
+            }
+
+            .bottom-nav {
+                display: flex;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 10px;
+            }
+
+            .stat-card {
+                padding: 12px 14px;
+                border-radius: var(--radius);
+            }
+
+            .stat-card .card-value {
+                font-size: 1.1rem;
+            }
+
+            .modal {
+                width: 96%;
+                padding: 18px;
+                border-radius: var(--radius-lg);
+            }
+
+            .page-header h1 {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .bottom-nav {
+                display: none;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+            }
+        }
+
+        /* ========== SKELETON ========== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-card) 25%, rgba(255, 255, 255, 0.03) 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite;
+            border-radius: var(--radius-sm);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ==================== AUTH SCREEN ==================== -->
+    <div id="authScreen" class="auth-screen" style="display:none;">
+        <div class="auth-card glass">
+            <h2>🔐 SurviveU</h2>
+            <p class="subtitle">Manajemen Keuangan Mahasiswa</p>
+            <div id="authForm" style="display:flex;flex-direction:column;gap:12px;">
+                <input type="text" id="authName" placeholder="Nama lengkap" style="display:none;">
+                <input type="email" id="authEmail" placeholder="Email">
+                <input type="password" id="authPassword" placeholder="Password">
+                <button class="btn btn-primary" id="authSubmitBtn">Masuk</button>
+                <button class="btn btn-outline" id="authToggleMode">Belum punya akun? Daftar</button>
+                <button class="btn btn-outline" id="authGuestBtn" style="margin-top:4px;">👀 Lanjut sebagai
+                    Guest</button>
+            </div>
+            <p id="authError"
+                style="color:var(--danger);font-size:0.75rem;text-align:center;margin-top:8px;display:none;"></p>
+        </div>
+    </div>
+
+    <!-- ==================== APP CONTAINER ==================== -->
+    <div id="appContainer" style="display:none;">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">⚡ SurviveU</div>
+            <ul class="sidebar-nav">
+                <li><a data-page="dashboard" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+                <li><a data-page="expenses"><i data-lucide="receipt"></i> Pengeluaran</a></li>
+                <li><a data-page="debts"><i data-lucide="credit-card"></i> Hutang</a></li>
+                <li><a data-page="analytics"><i data-lucide="bar-chart-3"></i> Analitik</a></li>
+                <li><a data-page="settings"><i data-lucide="settings"></i> Pengaturan</a></li>
+            </ul>
+            <div class="sidebar-user" id="sidebarUser">
+                <div class="sidebar-user-avatar" id="sidebarAvatar">M</div>
+                <div class="sidebar-user-info">
+                    <div class="name" id="sidebarName">Mahasiswa</div>
+                    <div class="role" id="sidebarRole">Guest</div>
+                </div>
+                <i data-lucide="log-out" style="width:16px;height:16px;color:var(--text-muted);cursor:pointer;"
+                    id="logoutBtn"></i>
+            </div>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="main-content" id="mainContent">
+            <!-- Pages rendered here dynamically -->
+        </main>
+
+        <!-- BOTTOM NAV -->
+        <nav class="bottom-nav" id="bottomNav">
+            <a data-page="dashboard" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+            <a data-page="expenses"><i data-lucide="receipt"></i> Pengeluaran</a>
+            <a data-page="debts"><i data-lucide="credit-card"></i> Hutang</a>
+            <a data-page="analytics"><i data-lucide="bar-chart-3"></i> Analitik</a>
+            <a data-page="settings"><i data-lucide="settings"></i> Atur</a>
+        </nav>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- MODAL CONTAINER -->
+    <div id="modalContainer"></div>
+
+    <script>
+        // ==================== FIREBASE CONFIG (PLACEHOLDER) ====================
+        // Ganti dengan config Firebase kamu sendiri
+        const firebaseConfig = {
+            apiKey: "AIzaSyDY93sCKMzh2YQEYhSKRH19l98T0XSgc58",
+            authDomain: "keuangan-5d503.firebaseapp.com",
+            projectId: "keuangan-5d503",
+            storageBucket: "keuangan-5d503.firebasestorage.app",
+            messagingSenderId: "414417370651",
+            appId: "1:414417370651:web:fdf7d57e5c60f8184282be",
+            measurementId: "G-0JXN4HC4L6"
+        };
+
+        let firebaseAvailable = false;
+        let db = null;
+        let auth = null;
+
+        // Inisialisasi Firebase (jika config valid)
+        try {
+            if (FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "AIzaSyDY93sCKMzh2YQEYhSKRH19l98T0XSgc58") {
+                firebase.initializeApp(FIREBASE_CONFIG);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                db.enablePersistence({ synchronizeTabs: true }).catch(() => { });
+                firebaseAvailable = true;
+                console.log('✅ Firebase terhubung');
+            } else {
+                console.log('ℹ️ Firebase tidak dikonfigurasi, menggunakan localStorage');
+            }
+        } catch (e) {
+            console.warn('⚠️ Firebase gagal inisialisasi:', e.message);
+        }
+
+        // ==================== STORAGE MANAGER ====================
+        class StorageManager {
+            constructor() {
+                this.prefix = 'surviveu_';
+                this.localCache = {};
+            }
+
+            async getData(key) {
+                // Coba Firestore dulu jika tersedia dan user login
+                if (firebaseAvailable && auth && auth.currentUser && db) {
+                    try {
+                        const doc = await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key)
+                            .get();
+                        if (doc.exists) {
+                            const data = doc.data().value;
+                            // Update local cache
+                            this.localCache[key] = data;
+                            localStorage.setItem(this.prefix + key, JSON.stringify(data));
+                            return data;
+                        }
+                    } catch (e) {
+                        console.warn('Firestore read fallback ke localStorage:', e.message);
+                    }
+                }
+                // Fallback ke localStorage
+                const raw = localStorage.getItem(this.prefix + key);
+                if (raw) {
+                    try { return JSON.parse(raw); } catch { return raw; }
+                }
+                return this.localCache[key] || null;
+            }
+
+            async setData(key, value) {
+                this.localCache[key] = value;
+                localStorage.setItem(this.prefix + key, JSON.stringify(value));
+                // Simpan ke Firestore jika tersedia
+                if (firebaseAvailable && auth && auth.currentUser && db) {
+                    try {
+                        await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key).set({
+                            value: value,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }, { merge: true });
+                    } catch (e) {
+                        console.warn('Firestore write gagal, data tetap di localStorage');
+                    }
+                }
+            }
+
+            async removeData(key) {
+                delete this.localCache[key];
+                localStorage.removeItem(this.prefix + key);
+                if (firebaseAvailable && auth && auth.currentUser && db) {
+                    try {
+                        await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key).delete();
+                    } catch (e) { /* silent */ }
+                }
+            }
+
+            async getAllKeys() {
+                const keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k.startsWith(this.prefix)) keys.push(k.replace(this.prefix, ''));
+                }
+                return keys;
+            }
+
+            async clearAll() {
+                const keys = await this.getAllKeys();
+                for (const k of keys) {
+                    await this.removeData(k);
+                }
+                this.localCache = {};
+            }
+
+            async exportAll() {
+                const data = {};
+                const keys = await this.getAllKeys();
+                for (const k of keys) {
+                    data[k] = await this.getData(k);
+                }
+                return data;
+            }
+
+            async importAll(data) {
+                for (const [k, v] of Object.entries(data)) {
+                    await this.setData(k, v);
+                }
+            }
+        }
+
+        // ==================== FINANCE MANAGER ====================
+        class FinanceManager {
+            constructor(storage) {
+                this.storage = storage;
+                this.initialMoney = 1000000;
+                this.currentBalance = 1000000;
+                this.expenses = [];
+                this.debts = [];
+                this.monthStart = '2026-05-01';
+                this.monthEnd = '2026-05-31';
+                this.totalDays = 31;
+            }
+
+            async init() {
+                // Load data
+                this.initialMoney = (await this.storage.getData('initialMoney')) || 1000000;
+                this.currentBalance = (await this.storage.getData('currentBalance')) || this.initialMoney;
+                this.expenses = (await this.storage.getData('expenses')) || [];
+                this.debts = (await this.storage.getData('debts')) || this.getDefaultDebts();
+                this.monthStart = (await this.storage.getData('monthStart')) || '2026-05-01';
+                this.monthEnd = (await this.storage.getData('monthEnd')) || '2026-05-31';
+                this.totalDays = this.getDaysInMonth();
+                // Recalculate balance
+                await this.recalculateBalance();
+                return this;
+            }
+
+            getDefaultDebts() {
+                return [
+                    {
+                        id: 'd1', name: 'Hutang A (Prioritas)', amount: 157050, paid: 0, dueDate: '2026-05-15',
+                        priority: 'high', status: 'unpaid'
+                    },
+                    {
+                        id: 'd2', name: 'Hutang B', amount: 91675, paid: 0, dueDate: '2026-05-20', priority: 'medium',
+                        status: 'unpaid'
+                    },
+                    {
+                        id: 'd3', name: 'Hutang C', amount: 45000, paid: 0, dueDate: '2026-05-25', priority: 'low',
+                        status: 'unpaid'
+                    },
+                    {
+                        id: 'd4', name: 'Hutang D (Cicilan)', amount: 180000, paid: 0, dueDate: '2026-05-28',
+                        priority: 'high', status: 'unpaid'
+                    },
+                ];
+            }
+
+            getDaysInMonth() {
+                const start = new Date(this.monthStart);
+                const end = new Date(this.monthEnd);
+                return Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            }
+
+            getToday() {
+                const now = new Date();
+                return now.toISOString().split('T')[0];
+            }
+
+            getDaysRemaining() {
+                const today = new Date(this.getToday());
+                const end = new Date(this.monthEnd);
+                const diff = Math.floor((end - today) / (1000 * 60 * 60 * 24));
+                return Math.max(0, diff) + 1; // termasuk hari ini
+            }
+
+            getDaysElapsed() {
+                const start = new Date(this.monthStart);
+                const today = new Date(this.getToday());
+                const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
+                return Math.max(0, Math.min(diff, this.totalDays));
+            }
+
+            getTotalDebtRemaining() {
+                return this.debts.reduce((sum, d) => sum + (d.amount - (d.paid || 0)), 0);
+            }
+
+            getTotalDebtPaid() {
+                return this.debts.reduce((sum, d) => sum + (d.paid || 0), 0);
+            }
+
+            getTotalExpenses() {
+                return this.expenses.reduce((sum, e) => sum + e.amount, 0);
+            }
+
+            getMoneyAfterDebts() {
+                return this.currentBalance - this.getTotalDebtRemaining();
+            }
+
+            getSafeDailyBudget() {
+                const remaining = this.getMoneyAfterDebts();
+                const daysLeft = this.getDaysRemaining();
+                if (daysLeft <= 0) return 0;
+                return Math.max(0, remaining / daysLeft);
+            }
+
+            getSafePerMeal() {
+                return Math.floor(this.getSafeDailyBudget() / 3);
+            }
+
+            getSafeTransport() {
+                return Math.floor(this.getSafeDailyBudget() * 0.25);
+            }
+
+            getEmergencyReserve() {
+                return Math.floor(this.getMoneyAfterDebts() * 0.1);
+            }
+
+            getTodayExpenses() {
+                const today = this.getToday();
+                return this.expenses.filter(e => e.date === today).reduce((sum, e) => sum + e.amount, 0);
+            }
+
+            getSafeToSpendToday() {
+                const safeDaily = this.getSafeDailyBudget();
+                const spentToday = this.getTodayExpenses();
+                return Math.max(0, safeDaily - spentToday);
+            }
+
+            getPredictedEmptyDate() {
+                const safeDaily = this.getSafeDailyBudget();
+                const remaining = this.getMoneyAfterDebts();
+                if (safeDaily <= 0) return 'Sekarang';
+                const daysLeft = Math.floor(remaining / safeDaily);
+                const today = new Date(this.getToday());
+                const emptyDate = new Date(today.getTime() + daysLeft * 24 * 60 * 60 * 1000);
+                return emptyDate.toISOString().split('T')[0];
+            }
+
+            getSurvivalPercentage() {
+                const totalNeeded = this.initialMoney;
+                const available = this.getMoneyAfterDebts();
+                const elapsed = this.getDaysElapsed();
+                const total = this.totalDays;
+                const expectedSpent = (totalNeeded / total) * elapsed;
+                const actualRemaining = available;
+                const expectedRemaining = totalNeeded - expectedSpent;
+                if (expectedRemaining <= 0) return 100;
+                const ratio = actualRemaining / expectedRemaining;
+                return Math.min(100, Math.max(0, Math.round(ratio * 100)));
+            }
+
+            getFinancialStatus() {
+                const survival = this.getSurvivalPercentage();
+                const moneyAfterDebts = this.getMoneyAfterDebts();
+                if (moneyAfterDebts <= 0) return { status: 'bangkrut', label: 'BANGKRUT MODE', cssClass: 'status-bangkrut' };
+                if (survival >= 80) return { status: 'aman', label: 'AMAN', cssClass: 'status-aman' };
+                if (survival >= 50) return { status: 'waspada', label: 'WASPADA', cssClass: 'status-waspada' };
+                return { status: 'kritis', label: 'KRITIS', cssClass: 'status-kritis' };
+            }
+
+            async recalculateBalance() {
+                const totalExpenses = this.getTotalExpenses();
+                const totalDebtPaid = this.getTotalDebtPaid();
+                this.currentBalance = this.initialMoney - totalExpenses - totalDebtPaid;
+                await this.storage.setData('currentBalance', this.currentBalance);
+                return this.currentBalance;
+            }
+
+            async addExpense(expense) {
+                expense.id = 'exp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                expense.createdAt = new Date().toISOString();
+                this.expenses.unshift(expense);
+                await this.storage.setData('expenses', this.expenses);
+                await this.recalculateBalance();
+                return expense;
+            }
+
+            async updateExpense(id, updates) {
+                const idx = this.expenses.findIndex(e => e.id === id);
+                if (idx >= 0) {
+                    this.expenses[idx] = { ...this.expenses[idx], ...updates, updatedAt: new Date().toISOString() };
+                    await this.storage.setData('expenses', this.expenses);
+                    await this.recalculateBalance();
+                }
+            }
+
+            async deleteExpense(id) {
+                this.expenses = this.expenses.filter(e => e.id !== id);
+                await this.storage.setData('expenses', this.expenses);
+                await this.recalculateBalance();
+            }
+
+            async addDebt(debt) {
+                debt.id = 'debt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+                debt.paid = debt.paid || 0;
+                debt.status = debt.status || 'unpaid';
+                this.debts.push(debt);
+                await this.storage.setData('debts', this.debts);
+                await this.recalculateBalance();
+                return debt;
+            }
+
+            async updateDebt(id, updates) {
+                const idx = this.debts.findIndex(d => d.id === id);
+                if (idx >= 0) {
+                    this.debts[idx] = { ...this.debts[idx], ...updates };
+                    if (this.debts[idx].paid >= this.debts[idx].amount) {
+                        this.debts[idx].status = 'paid';
+                        this.debts[idx].paid = this.debts[idx].amount;
+                    }
+                    await this.storage.setData('debts', this.debts);
+                    await this.recalculateBalance();
+                }
+            }
+
+            async deleteDebt(id) {
+                this.debts = this.debts.filter(d => d.id !== id);
+                await this.storage.setData('debts', this.debts);
+                await this.recalculateBalance();
+            }
+
+            async markDebtPaid(id) {
+                const idx = this.debts.findIndex(d => d.id === id);
+                if (idx >= 0) {
+                    this.debts[idx].paid = this.debts[idx].amount;
+                    this.debts[idx].status = 'paid';
+                    await this.storage.setData('debts', this.debts);
+                    await this.recalculateBalance();
+                }
+            }
+
+            async resetMonth(newInitial) {
+                this.initialMoney = newInitial || 1000000;
+                this.currentBalance = this.initialMoney;
+                this.expenses = [];
+                this.debts = this.getDefaultDebts();
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth();
+                this.monthStart = new Date(year, month, 1).toISOString().split('T')[0];
+                const lastDay = new Date(year, month + 1, 0).getDate();
+                this.monthEnd = new Date(year, month, lastDay).toISOString().split('T')[0];
+                this.totalDays = lastDay;
+                await this.storage.setData('initialMoney', this.initialMoney);
+                await this.storage.setData('currentBalance', this.currentBalance);
+                await this.storage.setData('expenses', this.expenses);
+                await this.storage.setData('debts', this.debts);
+                await this.storage.setData('monthStart', this.monthStart);
+                await this.storage.setData('monthEnd', this.monthEnd);
+            }
+
+            getDailyExpenseSummary() {
+                const summary = {};
+                this.expenses.forEach(e => {
+                    if (!summary[e.date]) summary[e.date] = 0;
+                    summary[e.date] += e.amount;
+                });
+                return summary;
+            }
+
+            getCategorySummary() {
+                const summary = {};
+                this.expenses.forEach(e => {
+                    const cat = e.category || 'Lainnya';
+                    if (!summary[cat]) summary[cat] = 0;
+                    summary[cat] += e.amount;
+                });
+                return summary;
+            }
+
+            getWeeklySummary() {
+                const weeks = {};
+                this.expenses.forEach(e => {
+                    const d = new Date(e.date);
+                    const weekNum = Math.ceil((d.getDate() + new Date(d.getFullYear(), d.getMonth(), 1).getDay()) /
+                        7);
+                    const key = 'Minggu ke-' + weekNum;
+                    if (!weeks[key]) weeks[key] = 0;
+                    weeks[key] += e.amount;
+                });
+                return weeks;
+            }
+
+            getSmartAlerts() {
+                const alerts = [];
+                const status = this.getFinancialStatus();
+                const todayExp = this.getTodayExpenses();
+                const safeDaily = this.getSafeDailyBudget();
+                const moneyAfterDebts = this.getMoneyAfterDebts();
+                const daysRemaining = this.getDaysRemaining();
+
+                if (status.status === 'bangkrut') {
+                    alerts.push({
+                        type: 'danger',
+                        msg: '⚠️ MODE BANGKRUT! Uang tidak cukup untuk menutupi hutang. Segera cari pemasukan tambahan!'
+                    });
+                } else if (status.status === 'kritis') {
+                    alerts.push({
+                        type: 'danger',
+                        msg: '🔴 Mode Kritis! Uangmu mungkin tidak cukup sampai akhir bulan. Hemat segera!'
+                    });
+                } else if (status.status === 'waspada') {
+                    alerts.push({
+                        type: 'warning',
+                        msg: '🟡 Mode Waspada. Pengeluaran mulai berbahaya, kurangi pengeluaran tidak penting.'
+                    });
+                }
+
+                if (todayExp > safeDaily * 1.5) {
+                    alerts.push({
+                        type: 'danger',
+                        msg: `💸 Hari ini kamu terlalu boros! Pengeluaran Rp${todayExp.toLocaleString('id-ID')} vs budget Rp${Math.floor(safeDaily).toLocaleString('id-ID')}`
+                    });
+                } else if (todayExp > safeDaily) {
+                    alerts.push({
+                        type: 'warning',
+                        msg: `⚡ Hati-hati, pengeluaran hari ini sudah di atas batas aman harian.`
+                    });
+                }
+
+                const highPriorityUnpaid = this.debts.filter(d => d.priority === 'high' && d.status === 'unpaid');
+                if (highPriorityUnpaid.length > 0) {
+                    alerts.push({
+                        type: 'warning',
+                        msg: `📌 ${highPriorityUnpaid.length} hutang prioritas tinggi belum dibayar! Total: Rp${highPriorityUnpaid.reduce((s, d) => s + (d.amount - d.paid), 0).toLocaleString('id-ID')}`
+                    });
+                }
+
+                if (moneyAfterDebts <= 0.05 * this.initialMoney && moneyAfterDebts > 0) {
+                    alerts.push({
+                        type: 'info',
+                        msg: '🔔 Mode Hemat Ekstrem aktif. Hanya boleh beli kebutuhan pokok.'
+                    });
+                }
+
+                const predEmpty = this.getPredictedEmptyDate();
+                const predEmptyDate = new Date(predEmpty);
+                const monthEndDate = new Date(this.monthEnd);
+                if (predEmptyDate < monthEndDate && status.status !== 'bangkrut') {
+                    const diffDays = Math.floor((monthEndDate - predEmptyDate) / (1000 * 60 * 60 * 24));
+                    alerts.push({
+                        type: 'warning',
+                        msg: `📉 Jika lanjut begini, uang habis sekitar ${predEmpty} (${diffDays} hari sebelum akhir bulan).`
+                    });
+                }
+
+                if (alerts.length === 0 && status.status === 'aman') {
+                    alerts.push({
+                        type: 'info',
+                        msg: '✅ Keuanganmu masih aman. Tapi jangan sok kaya ya, tetap hemat!'
+                    });
+                }
+
+                return alerts;
+            }
+        }
+
+        // ==================== AUTH MANAGER ====================
+        class AuthManager {
+            constructor(storage) {
+                this.storage = storage;
+                this.user = null;
+                this.isGuest = false;
+            }
+
+            async init() {
+                const savedUser = await this.storage.getData('authUser');
+                if (savedUser) {
+                    this.user = savedUser;
+                    this.isGuest = savedUser.isGuest || false;
+                }
+                if (firebaseAvailable && auth) {
+                    return new Promise((resolve) => {
+                        const unsubscribe = auth.onAuthStateChanged(async (fbUser) => {
+                            unsubscribe();
+                            if (fbUser) {
+                                this.user = {
+                                    uid: fbUser.uid,
+                                    email: fbUser.email,
+                                    displayName: fbUser.displayName || fbUser.email,
+                                    isGuest: false
+                                };
+                                this.isGuest = false;
+                                await this.storage.setData('authUser', this.user);
+                            }
+                            resolve(this.user);
+                        });
+                        // Timeout jika Firebase lambat
+                        setTimeout(() => resolve(this.user), 3000);
+                    });
+                }
+                return this.user;
+            }
+
+            async register(email, password, name) {
+                if (firebaseAvailable && auth) {
+                    const cred = await auth.createUserWithEmailAndPassword(email, password);
+                    await cred.user.updateProfile({ displayName: name });
+                    this.user = { uid: cred.user.uid, email, displayName: name, isGuest: false };
+                } else {
+                    this.user = { uid: 'local_' + Date.now(), email, displayName: name, isGuest: false };
+                }
+                this.isGuest = false;
+                await this.storage.setData('authUser', this.user);
+                return this.user;
+            }
+
+            async login(email, password) {
+                if (firebaseAvailable && auth) {
+                    const cred = await auth.signInWithEmailAndPassword(email, password);
+                    this.user = {
+                        uid: cred.user.uid,
+                        email: cred.user.email,
+                        displayName: cred.user.displayName || cred.user.email,
+                        isGuest: false
+                    };
+                } else {
+                    const saved = await this.storage.getData('authUser');
+                    if (saved && saved.email === email) {
+                        this.user = saved;
+                    } else {
+                        this.user = { uid: 'local_' + Date.now(), email, displayName: email, isGuest: false };
+                    }
+                }
+                this.isGuest = false;
+                await this.storage.setData('authUser', this.user);
+                return this.user;
+            }
+
+            async loginAsGuest() {
+                this.user = { uid: 'guest_' + Date.now(), email: 'guest@surviveu.app', displayName: 'Guest', isGuest: true };
+                this.isGuest = true;
+                await this.storage.setData('authUser', this.user);
+                if (firebaseAvailable && auth) {
+                    try {
+                        await auth.signInAnonymously();
+                    } catch (e) { /* silent */ }
+                }
+                return this.user;
+            }
+
+            async logout() {
+                this.user = null;
+                this.isGuest = false;
+                await this.storage.removeData('authUser');
+                if (firebaseAvailable && auth) {
+                    try { await auth.signOut(); } catch (e) { /* silent */ }
+                }
+            }
+
+            isLoggedIn() {
+                return !!this.user;
+            }
+        }
+
+        // ==================== UI MANAGER ====================
+        class UIManager {
+            constructor() {
+                this.currentPage = 'dashboard';
+                this.toastTimers = [];
+            }
+
+            showToast(msg, type = 'info') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.textContent = msg;
+                container.appendChild(toast);
+                const timer = setTimeout(() => {
+                    if (toast.parentNode) toast.remove();
+                }, 3000);
+                this.toastTimers.push(timer);
+            }
+
+            showModal(title, contentHtml, onConfirm, confirmText = 'Simpan') {
+                const container = document.getElementById('modalContainer');
+                const overlay = document.createElement('div');
+                overlay.className = 'modal-overlay';
+                overlay.innerHTML = `
+                    <div class="modal glass">
+                        <h3>${title}</h3>
+                        <div>${contentHtml}</div>
+                        <div class="modal-actions">
+                            <button class="btn btn-outline btn-sm cancel-btn">Batal</button>
+                            <button class="btn btn-primary btn-sm confirm-btn">${confirmText}</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(overlay);
+
+                const close = () => overlay.remove();
+                overlay.querySelector('.cancel-btn').addEventListener('click', close);
+                overlay.querySelector('.confirm-btn').addEventListener('click', () => {
+                    if (onConfirm) {
+                        const result = onConfirm(overlay);
+                        if (result !== false) close();
+                    } else {
+                        close();
+                    }
+                });
+                overlay.addEventListener('click', (e) => {
+                    if (e.target === overlay) close();
+                });
+                return overlay;
+            }
+
+            navigateTo(page) {
+                this.currentPage = page;
+                document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(a => a.classList.remove(
+                    'active'));
+                document.querySelectorAll(`[data-page="${page}"]`).forEach(a => a.classList.add('active'));
+                // Close sidebar on mobile
+                document.getElementById('sidebar').classList.remove('open');
+                // Dispatch event
+                document.dispatchEvent(new CustomEvent('pageChange', { detail: { page } }));
+            }
+
+            updateSidebarUser(user) {
+                const name = user ? (user.displayName || 'Mahasiswa') : 'Mahasiswa';
+                const role = user ? (user.isGuest ? 'Guest' : 'User') : 'Guest';
+                document.getElementById('sidebarName').textContent = name;
+                document.getElementById('sidebarRole').textContent = role;
+                document.getElementById('sidebarAvatar').textContent = name.charAt(0).toUpperCase();
+            }
+
+            formatRupiah(num) {
+                return 'Rp' + Math.round(num).toLocaleString('id-ID');
+            }
+
+            formatDate(dateStr) {
+                if (!dateStr) return '-';
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            }
+
+            getStatusBadge(statusObj) {
+                return `<span class="status-badge ${statusObj.cssClass}">${statusObj.label}</span>`;
+            }
+        }
+
+        // ==================== ANALYTICS MANAGER ====================
+        class AnalyticsManager {
+            constructor(financeManager) {
+                this.fm = financeManager;
+                this.charts = {};
+            }
+
+            destroyCharts() {
+                Object.values(this.charts).forEach(c => {
+                    if (c && c.destroy) c.destroy();
+                });
+                this.charts = {};
+            }
+
+            renderDailyChart(canvasId) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                if (this.charts[canvasId]) this.charts[canvasId].destroy();
+
+                const dailySummary = this.fm.getDailyExpenseSummary();
+                const sorted = Object.entries(dailySummary).sort((a, b) => a[0].localeCompare(b[0]));
+                const labels = sorted.map(s => {
+                    const d = new Date(s[0]);
+                    return d.getDate() + '/' + (d.getMonth() + 1);
+                });
+                const data = sorted.map(s => s[1]);
+
+                const ctx = canvas.getContext('2d');
+                this.charts[canvasId] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels.length > 0 ? labels : ['Belum ada'],
+                        datasets: [{
+                            label: 'Pengeluaran Harian',
+                            data: data.length > 0 ? data : [0],
+                            backgroundColor: 'rgba(108,92,231,0.5)',
+                            borderColor: 'rgba(108,92,231,1)',
+                            borderWidth: 1,
+                            borderRadius: 6,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                        },
+                        scales: {
+                            x: { ticks: { color: '#a0a0b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
+                            y: {
+                                ticks: {
+                                    color: '#a0a0b8', font: { size: 10 },
+                                    callback: v => 'Rp' + v.toLocaleString('id-ID')
+                                }, grid: { color: 'rgba(255,255,255,0.04)' }
+                            },
+                        },
+                    },
+                });
+            }
+
+            renderCategoryChart(canvasId) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                if (this.charts[canvasId]) this.charts[canvasId].destroy();
+
+                const catSummary = this.fm.getCategorySummary();
+                const entries = Object.entries(catSummary).sort((a, b) => b[1] - a[1]);
+                const labels = entries.map(e => e[0]);
+                const data = entries.map(e => e[1]);
+                const colors = ['#6c5ce7', '#ff5252', '#f9a825', '#00d2a0', '#448aff', '#ff8230', '#a29bfe', '#ff6e6e'];
+
+                const ctx = canvas.getContext('2d');
+                this.charts[canvasId] = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels.length > 0 ? labels : ['Belum ada data'],
+                        datasets: [{
+                            data: data.length > 0 ? data : [1],
+                            backgroundColor: colors.slice(0, Math.max(labels.length, 1)),
+                            borderColor: 'rgba(0,0,0,0.3)',
+                            borderWidth: 2,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#a0a0b8', font: { size: 10 }, padding: 14 }
+                            },
+                        },
+                    },
+                });
+            }
+
+            getFinancialHealthScore() {
+                const survival = this.fm.getSurvivalPercentage();
+                const debtRatio = this.fm.initialMoney > 0 ? (this.fm.getTotalDebtRemaining() / this.fm.initialMoney) *
+                    100 : 0;
+                const score = Math.max(0, Math.min(100, Math.round(survival * 0.7 + (100 - debtRatio) * 0.3)));
+                return score;
+            }
+
+            getMostDangerousCategory() {
+                const catSummary = this.fm.getCategorySummary();
+                let maxCat = null;
+                let maxVal = 0;
+                for (const [cat, val] of Object.entries(catSummary)) {
+                    if (val > maxVal) {
+                        maxVal = val;
+                        maxCat = cat;
+                    }
+                }
+                return { category: maxCat, amount: maxVal };
+            }
+        }
+
+        // ==================== MAIN APP ====================
+        class App {
+            constructor() {
+                this.storage = new StorageManager();
+                this.auth = new AuthManager(this.storage);
+                this.finance = new FinanceManager(this.storage);
+                this.ui = new UIManager();
+                this.analytics = null;
+                this.isInitialized = false;
+            }
+
+            async init() {
+                // Init auth
+                const user = await this.auth.init();
+                // Init finance
+                await this.finance.init();
+                // Init analytics
+                this.analytics = new AnalyticsManager(this.finance);
+
+                if (this.auth.isLoggedIn()) {
+                    this.showApp();
+                } else {
+                    this.showAuth();
+                }
+
+                this.setupEventListeners();
+                this.isInitialized = true;
+                console.log('✅ SurviveU initialized');
+            }
+
+            showAuth() {
+                document.getElementById('authScreen').style.display = 'flex';
+                document.getElementById('appContainer').style.display = 'none';
+                document.getElementById('authName').style.display = 'none';
+                document.getElementById('authSubmitBtn').textContent = 'Masuk';
+                document.getElementById('authToggleMode').textContent = 'Belum punya akun? Daftar';
+                document.getElementById('authError').style.display = 'none';
+                this.authMode = 'login';
+            }
+
+            showApp() {
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'flex';
+                this.ui.updateSidebarUser(this.auth.user);
+                this.ui.navigateTo('dashboard');
+                this.renderPage('dashboard');
+                this.loadLucide();
+            }
+
+            setupEventListeners() {
+                // Auth events
+                document.getElementById('authSubmitBtn').addEventListener('click', () => this.handleAuthSubmit());
+                document.getElementById('authToggleMode').addEventListener('click', () => this.toggleAuthMode());
+                document.getElementById('authGuestBtn').addEventListener('click', () => this.handleGuestLogin());
+                document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
+
+                // Navigation
+                document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(a => {
+                    a.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = a.getAttribute('data-page');
+                        this.ui.navigateTo(page);
+                        this.renderPage(page);
+                    });
+                });
+
+                // Page change listener
+                document.addEventListener('pageChange', (e) => {
+                    this.renderPage(e.detail.page);
+                });
+
+                // Sidebar user click
+                document.getElementById('sidebarUser').addEventListener('click', (e) => {
+                    if (e.target.closest('#logoutBtn')) return;
+                    this.ui.navigateTo('settings');
+                    this.renderPage('settings');
+                });
+
+                // Mobile: swipe to open sidebar
+                let touchStartX = 0;
+                document.addEventListener('touchstart', (e) => {
+                    touchStartX = e.touches[0].clientX;
+                });
+                document.addEventListener('touchend', (e) => {
+                    const diff = e.changedTouches[0].clientX - touchStartX;
+                    if (diff > 70 && touchStartX < 30 && window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.add('open');
+                    }
+                    if (diff < -70 && window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.remove('open');
+                    }
+                });
+
+                // Keyboard shortcut
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        document.getElementById('sidebar').classList.remove('open');
+                        document.getElementById('modalContainer').innerHTML = '';
+                    }
+                });
+            }
+
+            async handleAuthSubmit() {
+                const email = document.getElementById('authEmail').value.trim();
+                const password = document.getElementById('authPassword').value.trim();
+                const name = document.getElementById('authName').value.trim();
+                const errorEl = document.getElementById('authError');
+
+                if (!email || !password) {
+                    errorEl.textContent = 'Email dan password wajib diisi.';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                try {
+                    if (this.authMode === 'register') {
+                        if (!name) {
+                            errorEl.textContent = 'Nama lengkap wajib diisi untuk registrasi.';
+                            errorEl.style.display = 'block';
+                            return;
+                        }
+                        await this.auth.register(email, password, name);
+                    } else {
+                        await this.auth.login(email, password);
+                    }
+                    errorEl.style.display = 'none';
+                    await this.finance.init();
+                    this.analytics = new AnalyticsManager(this.finance);
+                    this.showApp();
+                    this.ui.showToast('Selamat datang! 👋', 'success');
+                } catch (e) {
+                    errorEl.textContent = 'Gagal: ' + (e.message || 'Periksa kembali kredensial.');
+                    errorEl.style.display = 'block';
+                }
+            }
+
+            toggleAuthMode() {
+                const nameInput = document.getElementById('authName');
+                const submitBtn = document.getElementById('authSubmitBtn');
+                const toggleBtn = document.getElementById('authToggleMode');
+                const errorEl = document.getElementById('authError');
+                errorEl.style.display = 'none';
+
+                if (this.authMode === 'login') {
+                    this.authMode = 'register';
+                    nameInput.style.display = 'block';
+                    submitBtn.textContent = 'Daftar';
+                    toggleBtn.textContent = 'Sudah punya akun? Masuk';
+                } else {
+                    this.authMode = 'login';
+                    nameInput.style.display = 'none';
+                    submitBtn.textContent = 'Masuk';
+                    toggleBtn.textContent = 'Belum punya akun? Daftar';
+                }
+            }
+
+            async handleGuestLogin() {
+                await this.auth.loginAsGuest();
+                await this.finance.init();
+                this.analytics = new AnalyticsManager(this.finance);
+                this.showApp();
+                this.ui.showToast('Masuk sebagai Guest 👀', 'info');
+            }
+
+            async handleLogout() {
+                await this.auth.logout();
+                this.ui.showToast('Berhasil logout 👋', 'info');
+                this.showAuth();
+            }
+
+            loadLucide() {
+                setTimeout(() => {
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }, 100);
+            }
+
+            // ==================== RENDER PAGES ====================
+            renderPage(page) {
+                const main = document.getElementById('mainContent');
+                this.analytics.destroyCharts();
+                switch (page) {
+                    case 'dashboard':
+                        main.innerHTML = this.renderDashboard();
+                        break;
+                    case 'expenses':
+                        main.innerHTML = this.renderExpenses();
+                        break;
+                    case 'debts':
+                        main.innerHTML = this.renderDebts();
+                        break;
+                    case 'analytics':
+                        main.innerHTML = this.renderAnalytics();
+                        break;
+                    case 'settings':
+                        main.innerHTML = this.renderSettings();
+                        break;
+                    default:
+                        main.innerHTML = this.renderDashboard();
+                }
+                this.loadLucide();
+                this.bindPageEvents(page);
+                // Render charts after DOM update
+                setTimeout(() => {
+                    if (page === 'analytics') {
+                        this.analytics.renderDailyChart('dailyChart');
+                        this.analytics.renderCategoryChart('categoryChart');
+                    }
+                    if (page === 'dashboard') {
+                        this.analytics.renderDailyChart('dashboardDailyChart');
+                    }
+                }, 200);
+            }
+
+            bindPageEvents(page) {
+                if (page === 'expenses') {
+                    document.getElementById('btnAddExpense')?.addEventListener('click', () => this.showExpenseModal());
+                    document.querySelectorAll('.expense-edit-btn').forEach(btn => {
+                        btn.addEventListener('click', () => this.showExpenseModal(btn.dataset.id));
+                    });
+                    document.querySelectorAll('.expense-delete-btn').forEach(btn => {
+                        btn.addEventListener('click', () => this.deleteExpense(btn.dataset.id));
+                    });
+                }
+                if (page === 'debts') {
+                    document.getElementById('btnAddDebt')?.addEventListener('click', () => this.showDebtModal());
+                    document.querySelectorAll('.debt-pay-btn').forEach(btn => {
+                        btn.addEventListener('click', () => this.markDebtPaid(btn.dataset.id));
+                    });
+                    document.querySelectorAll('.debt-delete-btn').forEach(btn => {
+                        btn.addEventListener('click', () => this.deleteDebt(btn.dataset.id));
+                    });
+                }
+                if (page === 'settings') {
+                    document.getElementById('btnSaveSettings')?.addEventListener('click', () => this.saveSettings());
+                    document.getElementById('btnExportData')?.addEventListener('click', () => this.exportData());
+                    document.getElementById('btnImportData')?.addEventListener('click', () => this.showImportModal());
+                    document.getElementById('btnResetData')?.addEventListener('click', () => this.resetAllData());
+                    document.getElementById('btnResetMonth')?.addEventListener('click', () => this.resetMonth());
+                }
+            }
+
+            // ==================== DASHBOARD ====================
+            renderDashboard() {
+                const fm = this.finance;
+                const status = fm.getFinancialStatus();
+                const alerts = fm.getSmartAlerts();
+                const survivalPct = fm.getSurvivalPercentage();
+                const healthScore = this.analytics.getFinancialHealthScore();
+
+                let alertsHtml = '';
+                alerts.forEach(a => {
+                    alertsHtml +=
+                        `<div class="alert-banner alert-${a.type}"><i data-lucide="alert-triangle" style="width:18px;height:18px;"></i> ${a.msg}</div>`;
+                });
+
+                const survivalColor = survivalPct >= 80 ? 'fill-success' : survivalPct >= 50 ? 'fill-warning' :
+                    'fill-danger';
+                const healthColor = healthScore >= 70 ? 'fill-success' : healthScore >= 40 ? 'fill-warning' :
+                    'fill-danger';
+
+                return `
+                    <div class="page-header">
+                        <h1>📊 Dashboard Finansial</h1>
+                        <p class="subtitle">${fm.getToday()} • ${fm.getDaysRemaining()} hari tersisa</p>
+                    </div>
+                    ${alertsHtml}
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                        ${this.ui.getStatusBadge(status)}
+                        <span style="font-size:0.8rem;color:var(--text-muted);">Financial Health: <b>${healthScore}/100</b></span>
+                    </div>
+                    <div class="cards-grid">
+                        <div class="stat-card">
+                            <div class="card-icon icon-purple"><i data-lucide="wallet"></i></div>
+                            <div class="card-label">Saldo Saat Ini</div>
+                            <div class="card-value">${this.ui.formatRupiah(fm.currentBalance)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-blue"><i data-lucide="banknote"></i></div>
+                            <div class="card-label">Uang Awal Bulan</div>
+                            <div class="card-value">${this.ui.formatRupiah(fm.initialMoney)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-red"><i data-lucide="credit-card"></i></div>
+                            <div class="card-label">Total Hutang Tersisa</div>
+                            <div class="card-value">${this.ui.formatRupiah(fm.getTotalDebtRemaining())}</div>
+                            <div class="card-sub">Terbayar: ${this.ui.formatRupiah(fm.getTotalDebtPaid())}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-green"><i data-lucide="piggy-bank"></i></div>
+                            <div class="card-label">Uang Setelah Hutang</div>
+                            <div class="card-value">${this.ui.formatRupiah(fm.getMoneyAfterDebts())}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-orange"><i data-lucide="clock"></i></div>
+                            <div class="card-label">Budget Aman/Hari</div>
+                            <div class="card-value">${this.ui.formatRupiah(fm.getSafeDailyBudget())}</div>
+                            <div class="card-sub">Safe-to-spend hari ini: ${this.ui.formatRupiah(fm.getSafeToSpendToday())}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-icon icon-blue"><i data-lucide="calendar-x"></i></div>
+                            <div class="card-label">Prediksi Uang Habis</div>
+                            <div class="card-value" style="font-size:1rem;">${fm.getPredictedEmptyDate()}</div>
+                        </div>
+                    </div>
+                    <div class="cards-grid" style="grid-template-columns:1fr 1fr;">
+                        <div class="stat-card">
+                            <div class="card-label">Survival Bulan Ini</div>
+                            <div class="progress-wrap">
+                                <div class="progress-label"><span>${survivalPct}%</span><span>Target 100%</span></div>
+                                <div class="progress-bar"><div class="progress-fill ${survivalColor}" style="width:${survivalPct}%;"></div></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="card-label">Financial Health Score</div>
+                            <div class="progress-wrap">
+                                <div class="progress-label"><span>${healthScore}/100</span></div>
+                                <div class="progress-bar"><div class="progress-fill ${healthColor}" style="width:${healthScore}%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-sm" style="padding:16px;margin-top:6px;">
+                        <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-secondary);">📈 Pengeluaran Harian (Quick View)</h4>
+                        <div class="chart-container" style="height:220px;"><canvas id="dashboardDailyChart"></canvas></div>
+                    </div>
+                    <div class="glass-sm" style="padding:14px 18px;margin-top:12px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;">
+                        <div><span style="color:var(--text-muted);font-size:0.7rem;">🍽 Budget/Makan</span><br><b>${this.ui.formatRupiah(fm.getSafePerMeal())}</b></div>
+                        <div><span style="color:var(--text-muted);font-size:0.7rem;">🚌 Budget Transport</span><br><b>${this.ui.formatRupiah(fm.getSafeTransport())}</b></div>
+                        <div><span style="color:var(--text-muted);font-size:0.7rem;">🆘 Dana Darurat</span><br><b>${this.ui.formatRupiah(fm.getEmergencyReserve())}</b></div>
+                        <div><span style="color:var(--text-muted);font-size:0.7rem;">💰 Hari Ini Terpakai</span><br><b>${this.ui.formatRupiah(fm.getTodayExpenses())}</b></div>
+                    </div>
+                `;
+            }
+
+            // ==================== EXPENSES PAGE ====================
+            renderExpenses() {
+                const fm = this.finance;
+                const expenses = fm.expenses;
+                let rows = '';
+                if (expenses.length === 0) {
+                    rows =
+                        `<tr><td colspan="6"><div class="empty-state"><i data-lucide="inbox"></i><p>Belum ada pengeluaran tercatat</p></div></td></tr>`;
+                } else {
+                    expenses.forEach(e => {
+                        rows += `
+                            <tr>
+                                <td>${this.ui.formatDate(e.date)}</td>
+                                <td><b>${e.category || 'Lainnya'}</b></td>
+                                <td>${this.ui.formatRupiah(e.amount)}</td>
+                                <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;">${e.note || '-'}</td>
+                                <td>${e.method || '-'}</td>
+                                <td>
+                                    <button class="btn-danger-sm expense-edit-btn" data-id="${e.id}" style="margin-right:4px;">✏️</button>
+                                    <button class="btn-danger-sm expense-delete-btn" data-id="${e.id}">🗑</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                return `
+                    <div class="page-header">
+                        <h1>🧾 Catatan Pengeluaran</h1>
+                        <p class="subtitle">Total: ${this.ui.formatRupiah(fm.getTotalExpenses())}</p>
+                        <button class="btn btn-primary btn-sm" id="btnAddExpense" style="margin-top:8px;">+ Tambah Pengeluaran</button>
+                    </div>
+                    <div class="table-wrap glass-sm">
+                        <table>
+                            <thead><tr><th>Tanggal</th><th>Kategori</th><th>Nominal</th><th>Catatan</th><th>Metode</th><th>Aksi</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            showExpenseModal(editId = null) {
+                const fm = this.finance;
+                let existing = null;
+                if (editId) {
+                    existing = fm.expenses.find(e => e.id === editId);
+                }
+                const contentHtml = `
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Tanggal</label>
+                            <input type="date" id="expDate" value="${existing ? existing.date : fm.getToday()}"></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Kategori</label>
+                            <select id="expCategory">
+                                ${['Makan', 'Transport', 'Kuliah', 'Nongkrong', 'Tagihan', 'Darurat', 'Lainnya'].map(c => `<option value="${c}" ${existing && existing.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+                            </select></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Nominal (Rp)</label>
+                            <input type="number" id="expAmount" value="${existing ? existing.amount : ''}" placeholder="0" min="1"></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Metode Bayar</label>
+                            <select id="expMethod">
+                                ${['Cash', 'QRIS', 'Transfer', 'GoPay', 'OVO', 'ShopeePay', 'Lainnya'].map(m => `<option value="${m}" ${existing && existing.method === m ? 'selected' : ''}>${m}</option>`).join('')}
+                            </select></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Catatan</label>
+                            <input type="text" id="expNote" value="${existing ? existing.note || '' : ''}" placeholder="Opsional"></div>
+                    </div>
+                `;
+                this.ui.showModal(existing ? 'Edit Pengeluaran' : 'Tambah Pengeluaran', contentHtml, (overlay) => {
+                    const date = overlay.querySelector('#expDate').value;
+                    const category = overlay.querySelector('#expCategory').value;
+                    const amount = parseInt(overlay.querySelector('#expAmount').value) || 0;
+                    const method = overlay.querySelector('#expMethod').value;
+                    const note = overlay.querySelector('#expNote').value;
+                    if (!date || amount <= 0) {
+                        this.ui.showToast('Tanggal dan nominal wajib diisi!', 'danger');
+                        return false;
+                    }
+                    if (existing) {
+                        fm.updateExpense(existing.id, { date, category, amount, method, note });
+                        this.ui.showToast('Pengeluaran diperbarui ✅', 'success');
+                    } else {
+                        fm.addExpense({ date, category, amount, method, note });
+                        this.ui.showToast('Pengeluaran ditambahkan 💸', 'info');
+                    }
+                    this.renderPage('expenses');
+                }, existing ? 'Update' : 'Simpan');
+            }
+
+            async deleteExpense(id) {
+                if (confirm('Hapus pengeluaran ini?')) {
+                    await this.finance.deleteExpense(id);
+                    this.ui.showToast('Pengeluaran dihapus 🗑', 'info');
+                    this.renderPage('expenses');
+                }
+            }
+
+            // ==================== DEBTS PAGE ====================
+            renderDebts() {
+                const fm = this.finance;
+                const debts = fm.debts;
+                let rows = '';
+                if (debts.length === 0) {
+                    rows =
+                        `<tr><td colspan="7"><div class="empty-state"><i data-lucide="credit-card"></i><p>Belum ada hutang tercatat</p></div></td></tr>`;
+                } else {
+                    // Sort by priority
+                    const priorityOrder = { high: 0, medium: 1, low: 2 };
+                    const sorted = [...debts].sort((a, b) => (priorityOrder[a.priority] || 3) - (priorityOrder[b
+                        .priority] || 3));
+                    sorted.forEach(d => {
+                        const remaining = d.amount - (d.paid || 0);
+                        const isPaid = d.status === 'paid';
+                        const rowClass = isPaid ? 'text-muted' : '';
+                        const priorityBadge = d.priority === 'high' ?
+                            '<span style="color:#ff5252;font-weight:700;">🔴 Tinggi</span>' :
+                            d.priority === 'medium' ?
+                                '<span style="color:#f9a825;font-weight:600;">🟡 Sedang</span>' :
+                                '<span style="color:#448aff;">🔵 Rendah</span>';
+                        rows += `
+                            <tr class="${rowClass}">
+                                <td><b>${d.name}</b></td>
+                                <td>${this.ui.formatRupiah(d.amount)}</td>
+                                <td>${this.ui.formatRupiah(d.paid || 0)}</td>
+                                <td style="color:${isPaid ? 'var(--success)' : 'var(--danger)'}"><b>${this.ui.formatRupiah(remaining)}</b></td>
+                                <td>${this.ui.formatDate(d.dueDate)}</td>
+                                <td>${priorityBadge}</td>
+                                <td>
+                                    ${isPaid ? '<span class="text-success">✅ Lunas</span>' : `
+                                        <button class="btn-success-sm debt-pay-btn" data-id="${d.id}" style="margin-right:4px;">✅ Lunas</button>
+                                        <button class="btn-danger-sm debt-delete-btn" data-id="${d.id}">🗑</button>
+                                    `}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                }
+                return `
+                    <div class="page-header">
+                        <h1>💳 Manajemen Hutang</h1>
+                        <p class="subtitle">Total: ${this.ui.formatRupiah(fm.getTotalDebtRemaining())} tersisa • ${this.ui.formatRupiah(fm.getTotalDebtPaid())} terbayar</p>
+                        <button class="btn btn-primary btn-sm" id="btnAddDebt" style="margin-top:8px;">+ Tambah Hutang</button>
+                    </div>
+                    <div class="table-wrap glass-sm">
+                        <table>
+                            <thead><tr><th>Nama</th><th>Total</th><th>Terbayar</th><th>Sisa</th><th>Jatuh Tempo</th><th>Prioritas</th><th>Aksi</th></tr></thead>
+                            <tbody>${rows}</tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            showDebtModal() {
+                const contentHtml = `
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Nama Hutang</label>
+                            <input type="text" id="debtName" placeholder="Contoh: Cicilan Laptop"></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Total (Rp)</label>
+                            <input type="number" id="debtAmount" placeholder="0" min="1"></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Sudah Dibayar (Rp)</label>
+                            <input type="number" id="debtPaid" value="0" min="0"></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Jatuh Tempo</label>
+                            <input type="date" id="debtDueDate"></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Prioritas</label>
+                            <select id="debtPriority"><option value="high">🔴 Tinggi</option><option value="medium">🟡 Sedang</option><option value="low">🔵 Rendah</option></select></div>
+                    </div>
+                `;
+                this.ui.showModal('Tambah Hutang', contentHtml, async (overlay) => {
+                    const name = overlay.querySelector('#debtName').value.trim();
+                    const amount = parseInt(overlay.querySelector('#debtAmount').value) || 0;
+                    const paid = parseInt(overlay.querySelector('#debtPaid').value) || 0;
+                    const dueDate = overlay.querySelector('#debtDueDate').value;
+                    const priority = overlay.querySelector('#debtPriority').value;
+                    if (!name || amount <= 0) {
+                        this.ui.showToast('Nama dan total wajib diisi!', 'danger');
+                        return false;
+                    }
+                    await this.finance.addDebt({
+                        name, amount, paid, dueDate, priority, status: paid >= amount ?
+                            'paid' : 'unpaid'
+                    });
+                    this.ui.showToast('Hutang ditambahkan 📋', 'info');
+                    this.renderPage('debts');
+                });
+            }
+
+            async markDebtPaid(id) {
+                if (confirm('Tandai hutang ini sebagai lunas?')) {
+                    await this.finance.markDebtPaid(id);
+                    this.ui.showToast('Hutang dilunasi! 🎉', 'success');
+                    this.renderPage('debts');
+                }
+            }
+
+            async deleteDebt(id) {
+                if (confirm('Hapus hutang ini?')) {
+                    await this.finance.deleteDebt(id);
+                    this.ui.showToast('Hutang dihapus 🗑', 'info');
+                    this.renderPage('debts');
+                }
+            }
+
+            // ==================== ANALYTICS PAGE ====================
+            renderAnalytics() {
+                const fm = this.finance;
+                const healthScore = this.analytics.getFinancialHealthScore();
+                const dangerous = this.analytics.getMostDangerousCategory();
+                const weeklySummary = fm.getWeeklySummary();
+                const totalExp = fm.getTotalExpenses();
+                const burnRate = fm.getDaysElapsed() > 0 ? Math.round(fm.getTotalExpenses() / fm.getDaysElapsed()) : 0;
+
+                let weeklyHtml = '';
+                for (const [week, amount] of Object.entries(weeklySummary)) {
+                    const pct = totalExp > 0 ? Math.round((amount / totalExp) * 100) : 0;
+                    weeklyHtml += `
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+                            <span>${week}</span>
+                            <span><b>${this.ui.formatRupiah(amount)}</b> (${pct}%)</span>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="page-header">
+                        <h1>📈 Analitik & Insight</h1>
+                        <p class="subtitle">Financial Health Score: <b>${healthScore}/100</b></p>
+                    </div>
+                    <div class="cards-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));">
+                        <div class="stat-card"><div class="card-label">Total Pengeluaran</div><div class="card-value" style="font-size:1.1rem;">${this.ui.formatRupiah(totalExp)}</div></div>
+                        <div class="stat-card"><div class="card-label">Burn Rate/Hari</div><div class="card-value" style="font-size:1.1rem;">${this.ui.formatRupiah(burnRate)}</div></div>
+                        <div class="stat-card"><div class="card-label">Kategori Berbahaya</div><div class="card-value" style="font-size:1rem;">${dangerous.category || '-'}</div><div class="card-sub">${dangerous.amount ? this.ui.formatRupiah(dangerous.amount) : ''}</div></div>
+                        <div class="stat-card"><div class="card-label">Hari Berlalu</div><div class="card-value" style="font-size:1.1rem;">${fm.getDaysElapsed()}/${fm.totalDays}</div></div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;">
+                        <div class="glass-sm" style="padding:16px;">
+                            <h4 style="font-size:0.8rem;margin-bottom:8px;color:var(--text-secondary);">📊 Pengeluaran Harian</h4>
+                            <div class="chart-container" style="height:240px;"><canvas id="dailyChart"></canvas></div>
+                        </div>
+                        <div class="glass-sm" style="padding:16px;">
+                            <h4 style="font-size:0.8rem;margin-bottom:8px;color:var(--text-secondary);">🍩 Kategori Pengeluaran</h4>
+                            <div class="chart-container" style="height:240px;"><canvas id="categoryChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="glass-sm" style="padding:16px;margin-top:12px;">
+                        <h4 style="font-size:0.8rem;margin-bottom:8px;color:var(--text-secondary);">📅 Ringkasan Mingguan</h4>
+                        ${weeklyHtml || '<p class="text-muted" style="font-size:0.8rem;">Belum ada data</p>'}
+                    </div>
+                `;
+            }
+
+            // ==================== SETTINGS PAGE ====================
+            renderSettings() {
+                const fm = this.finance;
+                return `
+                    <div class="page-header">
+                        <h1>⚙️ Pengaturan</h1>
+                    </div>
+                    <div class="glass-sm" style="padding:20px;margin-bottom:14px;">
+                        <h4 style="margin-bottom:12px;">📝 Data Bulanan</h4>
+                        <div style="display:flex;flex-direction:column;gap:10px;">
+                            <div><label style="font-size:0.75rem;color:var(--text-muted);">Uang Awal Bulan (Rp)</label>
+                                <input type="number" id="setInitialMoney" value="${fm.initialMoney}"></div>
+                            <div><label style="font-size:0.75rem;color:var(--text-muted);">Tanggal Mulai</label>
+                                <input type="date" id="setMonthStart" value="${fm.monthStart}"></div>
+                            <div><label style="font-size:0.75rem;color:var(--text-muted);">Tanggal Akhir</label>
+                                <input type="date" id="setMonthEnd" value="${fm.monthEnd}"></div>
+                            <button class="btn btn-primary btn-sm" id="btnSaveSettings">💾 Simpan Pengaturan</button>
+                        </div>
+                    </div>
+                    <div class="glass-sm" style="padding:20px;margin-bottom:14px;">
+                        <h4 style="margin-bottom:12px;">🔄 Reset Bulan Baru</h4>
+                        <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;">Ini akan mereset semua pengeluaran dan mengembalikan saldo ke uang awal (hutang di-reset ke default).</p>
+                        <button class="btn btn-outline btn-sm" id="btnResetMonth">🔄 Reset Bulan Baru</button>
+                    </div>
+                    <div class="glass-sm" style="padding:20px;margin-bottom:14px;">
+                        <h4 style="margin-bottom:12px;">💾 Data</h4>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="btn btn-outline btn-sm" id="btnExportData">📤 Export Data (JSON)</button>
+                            <button class="btn btn-outline btn-sm" id="btnImportData">📥 Import Data (JSON)</button>
+                            <button class="btn btn-danger-sm" id="btnResetData" style="margin-left:auto;">⚠️ Reset Semua Data</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            async saveSettings() {
+                const initialMoney = parseInt(document.getElementById('setInitialMoney').value) || 1000000;
+                const monthStart = document.getElementById('setMonthStart').value;
+                const monthEnd = document.getElementById('setMonthEnd').value;
+                this.finance.initialMoney = initialMoney;
+                this.finance.monthStart = monthStart;
+                this.finance.monthEnd = monthEnd;
+                this.finance.totalDays = this.finance.getDaysInMonth();
+                await this.finance.storage.setData('initialMoney', initialMoney);
+                await this.finance.storage.setData('monthStart', monthStart);
+                await this.finance.storage.setData('monthEnd', monthEnd);
+                await this.finance.recalculateBalance();
+                this.ui.showToast('Pengaturan disimpan ✅', 'success');
+                this.renderPage('settings');
+            }
+
+            async exportData() {
+                const data = await this.storage.exportAll();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'surviveu_backup_' + new Date().toISOString().split('T')[0] + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+                this.ui.showToast('Data diexport! 📤', 'success');
+            }
+
+            showImportModal() {
+                const contentHtml = `
+                    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;">Pilih file JSON hasil export sebelumnya.</p>
+                    <input type="file" id="importFileInput" accept=".json">
+                `;
+                this.ui.showModal('Import Data', contentHtml, async (overlay) => {
+                    const fileInput = overlay.querySelector('#importFileInput');
+                    const file = fileInput.files[0];
+                    if (!file) {
+                        this.ui.showToast('Pilih file terlebih dahulu', 'warning');
+                        return false;
+                    }
+                    try {
+                        const text = await file.text();
+                        const data = JSON.parse(text);
+                        await this.storage.importAll(data);
+                        await this.finance.init();
+                        this.analytics = new AnalyticsManager(this.finance);
+                        this.ui.showToast('Data berhasil diimport! 📥', 'success');
+                        this.renderPage('settings');
+                    } catch (e) {
+                        this.ui.showToast('Gagal import: file tidak valid', 'danger');
+                    }
+                }, 'Import');
+            }
+
+            async resetAllData() {
+                if (confirm('⚠️ Yakin ingin mereset SEMUA data? Ini tidak bisa dibatalkan!')) {
+                    if (confirm('Terakhir: semua data akan hilang. Lanjutkan?')) {
+                        await this.storage.clearAll();
+                        await this.finance.init();
+                        this.analytics = new AnalyticsManager(this.finance);
+                        this.ui.showToast('Semua data direset 🔄', 'warning');
+                        this.ui.navigateTo('dashboard');
+                        this.renderPage('dashboard');
+                    }
+                }
+            }
+
+            async resetMonth() {
+                if (confirm('Reset ke bulan baru? Pengeluaran akan dihapus, saldo kembali ke awal.')) {
+                    await this.finance.resetMonth(this.finance.initialMoney);
+                    this.analytics = new AnalyticsManager(this.finance);
+                    this.ui.showToast('Bulan baru dimulai! 🎉', 'success');
+                    this.ui.navigateTo('dashboard');
+                    this.renderPage('dashboard');
+                }
+            }
+        }
+
+        // ==================== INITIALIZE APP ====================
+        const app = new App();
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+
+        // Global error handler
+        window.addEventListener('error', (e) => {
+            console.error('App error:', e.error);
+            const toastContainer = document.getElementById('toastContainer');
+            if (toastContainer) {
+                const toast = document.createElement('div');
+                toast.className = 'toast toast-danger';
+                toast.textContent = '⚠️ Terjadi kesalahan. Silakan refresh halaman.';
+                toastContainer.appendChild(toast);
+                setTimeout(() => toast.remove(), 4000);
+            }
+        });
+
+        console.log('🚀 SurviveU - Manajemen Keuangan Mahasiswa');
+        console.log('📅 Hari ini: 04 Mei 2026');
+        console.log('💰 Uang awal: Rp1.000.000');
+        console.log('💳 Total hutang default: Rp473.725');
+        console.log('📱 Siap digunakan!');
+    </script>
+</body>
+
+</html>
