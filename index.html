@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SurviveU - Manajemen Keuangan Mahasiswa</title>
 
     <!-- Firebase CDN -->
@@ -367,9 +367,16 @@
         /* ========== CARDS GRID ========== */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 14px;
-            margin-bottom: 18px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 480px) {
+            .cards-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 14px;
+            }
         }
 
         .stat-card {
@@ -883,6 +890,26 @@
 
         /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
+
+            .btn-danger-sm,
+            .btn-success-sm {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                min-width: 44px;
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            table td {
+                padding: 10px 8px;
+            }
+
+            #menuToggle {
+                display: flex !important;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
                 width: 280px;
@@ -894,6 +921,7 @@
             }
 
             .main-content {
+                padding-top: 60px;
                 margin-left: 0;
                 padding: 16px 12px 100px;
             }
@@ -982,6 +1010,16 @@
 
     <!-- ==================== APP CONTAINER ==================== -->
     <div id="appContainer" style="display:none;">
+        <!-- HAMBURGER BUTTON (hanya muncul di mobile) -->
+        <button id="menuToggle" style="
+  display:none; position:fixed; top:12px; left:12px; z-index:300;
+  width:40px; height:40px; border-radius:12px; background:var(--bg-glass);
+  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--border); color:var(--text-primary); font-size:1.2rem;
+  align-items:center; justify-content:center; cursor:pointer;
+" aria-label="Menu">
+            ☰
+        </button>
         <!-- SIDEBAR -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo">⚡ SurviveU</div>
@@ -1853,6 +1891,10 @@
                 document.getElementById('authGuestBtn').addEventListener('click', () => this.handleGuestLogin());
                 document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
 
+                document.getElementById('menuToggle')?.addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.toggle('open');
+                });
+
                 // Navigation
                 document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(a => {
                     a.addEventListener('click', (e) => {
@@ -2021,6 +2063,7 @@
                     document.querySelectorAll('.expense-delete-btn').forEach(btn => {
                         btn.addEventListener('click', () => this.deleteExpense(btn.dataset.id));
                     });
+                    document.getElementById('fabAddExpense')?.addEventListener('click', () => this.showExpenseModal());
                 }
                 if (page === 'debts') {
                     document.getElementById('btnAddDebt')?.addEventListener('click', () => this.showDebtModal());
@@ -2162,6 +2205,12 @@
                         <h1>🧾 Catatan Pengeluaran</h1>
                         <p class="subtitle">Total: ${this.ui.formatRupiah(fm.getTotalExpenses())}</p>
                         <button class="btn btn-primary btn-sm" id="btnAddExpense" style="margin-top:8px;">+ Tambah Pengeluaran</button>
+                        <button id="fabAddExpense" style="
+  position:fixed; bottom:80px; right:20px; z-index:400;
+  width:56px; height:56px; border-radius:50%; background:var(--accent);
+  color:#fff; border:none; font-size:1.8rem; box-shadow:0 6px 24px var(--accent-glow);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+" title="Tambah Pengeluaran Cepat">+</button>
                     </div>
                     <div class="table-wrap glass-sm">
                         <table>
