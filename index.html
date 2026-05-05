@@ -3,24 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>SurviveU - Manajemen Keuangan Mahasiswa</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 
     <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js">
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 
     <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js">
-    </script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
     <style>
         :root {
@@ -51,7 +48,6 @@
             --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
             --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
-            --shadow-glow: 0 0 30px var(--accent-glow);
             --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             --font: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             --sidebar-w: 260px;
@@ -94,7 +90,7 @@
             border-radius: 10px;
         }
 
-        /* ========== GLASS CARD ========== */
+        /* Glass */
         .glass {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
@@ -118,7 +114,7 @@
             transition: var(--transition);
         }
 
-        /* ========== LAYOUT ========== */
+        /* Layout */
         .app-container {
             display: flex;
             min-height: 100vh;
@@ -165,7 +161,28 @@
             padding: 0 8px;
         }
 
-        /* ========== SIDEBAR ========== */
+        /* Hamburger */
+        #menuToggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 300;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* Sidebar */
         .sidebar-logo {
             font-size: 1.5rem;
             font-weight: 800;
@@ -173,7 +190,6 @@
             background: linear-gradient(135deg, var(--accent-light), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             margin-bottom: 20px;
             padding: 0 10px;
         }
@@ -208,12 +224,6 @@
         .sidebar-nav li a.active {
             background: rgba(108, 92, 231, 0.2);
             font-weight: 600;
-        }
-
-        .sidebar-nav li a i {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
         }
 
         .sidebar-user {
@@ -259,7 +269,7 @@
             color: var(--text-muted);
         }
 
-        /* ========== BOTTOM NAV ========== */
+        /* Bottom nav */
         .bottom-nav a {
             display: flex;
             flex-direction: column;
@@ -280,12 +290,7 @@
             color: var(--accent-light);
         }
 
-        .bottom-nav a i {
-            width: 20px;
-            height: 20px;
-        }
-
-        /* ========== HEADER ========== */
+        /* Cards */
         .page-header {
             margin-bottom: 20px;
         }
@@ -302,7 +307,6 @@
             margin-top: 2px;
         }
 
-        /* ========== STATUS BADGE ========== */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -312,7 +316,7 @@
             font-weight: 700;
             font-size: 0.78rem;
             letter-spacing: 0.3px;
-            animation: pulse-badge 2.5s ease-in-out infinite;
+            animation: pulse-badge 2.5s infinite;
         }
 
         .status-aman {
@@ -337,18 +341,18 @@
             background: rgba(255, 82, 82, 0.2);
             color: var(--danger);
             border: 1px solid rgba(255, 82, 82, 0.4);
-            animation: pulse-danger 1s ease-in-out infinite;
+            animation: pulse-danger 1s infinite;
         }
 
         @keyframes pulse-badge {
 
             0%,
             100% {
-                opacity: 1;
+                opacity: 1
             }
 
             50% {
-                opacity: 0.75;
+                opacity: 0.75
             }
         }
 
@@ -356,15 +360,14 @@
 
             0%,
             100% {
-                box-shadow: 0 0 0 0 var(--danger-glow);
+                box-shadow: 0 0 0 0 var(--danger-glow)
             }
 
             50% {
-                box-shadow: 0 0 18px 6px var(--danger-glow);
+                box-shadow: 0 0 18px 6px var(--danger-glow)
             }
         }
 
-        /* ========== CARDS GRID ========== */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -453,7 +456,7 @@
             color: var(--info);
         }
 
-        /* ========== PROGRESS BAR ========== */
+        /* Progress */
         .progress-wrap {
             margin: 6px 0;
         }
@@ -477,7 +480,7 @@
         .progress-fill {
             height: 100%;
             border-radius: 10px;
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 0.6s;
         }
 
         .fill-success {
@@ -496,7 +499,7 @@
             background: linear-gradient(90deg, #6c5ce7, #a29bfe);
         }
 
-        /* ========== BUTTONS ========== */
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -546,25 +549,35 @@
             background: rgba(255, 82, 82, 0.15);
             color: var(--danger);
             border: 1px solid rgba(255, 82, 82, 0.3);
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             cursor: pointer;
             font-weight: 600;
+            min-width: 44px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .btn-success-sm {
             background: rgba(0, 210, 160, 0.15);
             color: var(--success);
             border: 1px solid rgba(0, 210, 160, 0.3);
-            padding: 5px 10px;
+            padding: 8px 12px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             cursor: pointer;
             font-weight: 600;
+            min-width: 44px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* ========== TABLE ========== */
+        /* Table */
         .table-wrap {
             overflow-x: auto;
             border-radius: var(--radius);
@@ -577,15 +590,15 @@
             font-size: 0.8rem;
         }
 
-        table th,
-        table td {
+        th,
+        td {
             padding: 12px 14px;
             text-align: left;
             border-bottom: 1px solid var(--border);
             white-space: nowrap;
         }
 
-        table th {
+        th {
             color: var(--text-muted);
             font-weight: 600;
             font-size: 0.7rem;
@@ -594,32 +607,12 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
-        table tr:hover td {
+        tr:hover td {
             background: rgba(255, 255, 255, 0.02);
         }
 
-        .text-success {
-            color: var(--success);
-        }
-
-        .text-danger {
-            color: var(--danger);
-        }
-
-        .text-warning {
-            color: var(--warning);
-        }
-
-        .text-muted {
-            color: var(--text-muted);
-        }
-
-        /* ========== FORMS ========== */
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="email"],
-        input[type="password"],
+        /* Forms */
+        input,
         select,
         textarea {
             width: 100%;
@@ -645,18 +638,13 @@
             cursor: pointer;
             appearance: none;
             -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a0a0b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,...");
             background-repeat: no-repeat;
             background-position: right 12px center;
             padding-right: 36px;
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-
-        /* ========== MODAL ========== */
+        /* Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -665,7 +653,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            animation: fadeIn 0.2s ease;
+            animation: fadeIn 0.2s;
         }
 
         .modal {
@@ -678,45 +666,32 @@
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: var(--shadow-lg);
-            animation: slideUp 0.25s ease;
-        }
-
-        .modal h3 {
-            font-size: 1.2rem;
-            margin-bottom: 16px;
-            letter-spacing: -0.2px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 18px;
+            animation: slideUp 0.25s;
         }
 
         @keyframes fadeIn {
             from {
-                opacity: 0;
+                opacity: 0
             }
 
             to {
-                opacity: 1;
+                opacity: 1
             }
         }
 
         @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(30px)
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0)
             }
         }
 
-        /* ========== TOAST ========== */
+        /* Toast */
         .toast-container {
             position: fixed;
             top: 16px;
@@ -737,7 +712,7 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--border);
-            animation: toastIn 0.35s ease, toastOut 0.35s ease 2.5s forwards;
+            animation: toastIn 0.35s, toastOut 0.35s 2.5s forwards;
             box-shadow: var(--shadow);
             max-width: 360px;
         }
@@ -765,33 +740,31 @@
         @keyframes toastIn {
             from {
                 transform: translateX(120%);
-                opacity: 0;
+                opacity: 0
             }
 
             to {
                 transform: translateX(0);
-                opacity: 1;
+                opacity: 1
             }
         }
 
         @keyframes toastOut {
             from {
                 transform: translateX(0);
-                opacity: 1;
+                opacity: 1
             }
 
             to {
                 transform: translateX(120%);
-                opacity: 0;
+                opacity: 0
             }
         }
 
-        /* ========== CHART CONTAINER ========== */
+        /* Chart */
         .chart-container {
             position: relative;
             width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
         }
 
         .chart-container canvas {
@@ -799,25 +772,14 @@
             max-height: 300px;
         }
 
-        /* ========== EMPTY STATE ========== */
+        /* Empty */
         .empty-state {
             text-align: center;
             padding: 40px 20px;
             color: var(--text-muted);
         }
 
-        .empty-state i {
-            width: 48px;
-            height: 48px;
-            opacity: 0.4;
-            margin-bottom: 12px;
-        }
-
-        .empty-state p {
-            font-size: 0.85rem;
-        }
-
-        /* ========== ALERT BANNER ========== */
+        /* Alert */
         .alert-banner {
             padding: 14px 18px;
             border-radius: var(--radius);
@@ -827,7 +789,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            animation: fadeIn 0.3s ease;
         }
 
         .alert-danger {
@@ -848,7 +809,7 @@
             color: #6aa0ff;
         }
 
-        /* ========== AUTH SCREEN ========== */
+        /* Auth */
         .auth-screen {
             min-height: 100vh;
             display: flex;
@@ -869,47 +830,26 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .auth-card h2 {
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 6px;
-            letter-spacing: -0.3px;
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--bg-card) 25%, rgba(255, 255, 255, 0.03) 50%, var(--bg-card) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.6s infinite;
+            border-radius: var(--radius-sm);
         }
 
-        .auth-card .subtitle {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            margin-bottom: 20px;
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0
+            }
+
+            100% {
+                background-position: -200% 0
+            }
         }
 
-        .auth-card .btn {
-            width: 100%;
-            justify-content: center;
-        }
-
-        /* ========== RESPONSIVE ========== */
+        /* Responsive */
         @media (max-width: 768px) {
-
-            .btn-danger-sm,
-            .btn-success-sm {
-                padding: 8px 12px;
-                font-size: 0.75rem;
-                min-width: 44px;
-                min-height: 44px;
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-            }
-
-            table td {
-                padding: 10px 8px;
-            }
-
-            #menuToggle {
-                display: flex !important;
-            }
-
             .sidebar {
                 transform: translateX(-100%);
                 width: 280px;
@@ -921,18 +861,21 @@
             }
 
             .main-content {
-                padding-top: 60px;
                 margin-left: 0;
-                padding: 16px 12px 100px;
+                padding: 60px 12px 100px;
             }
 
             .bottom-nav {
                 display: flex;
             }
 
+            #menuToggle {
+                display: flex;
+            }
+
             .cards-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-                gap: 10px;
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 8px;
             }
 
             .stat-card {
@@ -963,33 +906,17 @@
             .sidebar {
                 transform: translateX(0);
             }
-        }
 
-        /* ========== SKELETON ========== */
-        .skeleton {
-            background: linear-gradient(90deg, var(--bg-card) 25%, rgba(255, 255, 255, 0.03) 50%, var(--bg-card) 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.6s infinite;
-            border-radius: var(--radius-sm);
-        }
-
-        @keyframes shimmer {
-            0% {
-                background-position: 200% 0;
-            }
-
-            100% {
-                background-position: -200% 0;
+            #menuToggle {
+                display: none;
             }
         }
     </style>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 </head>
 
 <body>
 
-    <!-- ==================== AUTH SCREEN ==================== -->
+    <!-- Auth Screen -->
     <div id="authScreen" class="auth-screen" style="display:none;">
         <div class="auth-card glass">
             <h2>🔐 SurviveU</h2>
@@ -1000,27 +927,20 @@
                 <input type="password" id="authPassword" placeholder="Password">
                 <button class="btn btn-primary" id="authSubmitBtn">Masuk</button>
                 <button class="btn btn-outline" id="authToggleMode">Belum punya akun? Daftar</button>
-                <button class="btn btn-outline" id="authGuestBtn" style="margin-top:4px;">👀 Lanjut sebagai
-                    Guest</button>
+                <button class="btn btn-outline" id="authGuestBtn">👀 Lanjut sebagai Guest</button>
             </div>
             <p id="authError"
                 style="color:var(--danger);font-size:0.75rem;text-align:center;margin-top:8px;display:none;"></p>
         </div>
     </div>
 
-    <!-- ==================== APP CONTAINER ==================== -->
+    <!-- App Container -->
     <div id="appContainer" style="display:none;">
-        <!-- HAMBURGER BUTTON (hanya muncul di mobile) -->
-        <button id="menuToggle" style="
-  display:none; position:fixed; top:12px; left:12px; z-index:300;
-  width:40px; height:40px; border-radius:12px; background:var(--bg-glass);
-  backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
-  border:1px solid var(--border); color:var(--text-primary); font-size:1.2rem;
-  align-items:center; justify-content:center; cursor:pointer;
-" aria-label="Menu">
-            ☰
-        </button>
-        <!-- SIDEBAR -->
+
+        <!-- Hamburger Button -->
+        <button id="menuToggle" aria-label="Menu">☰</button>
+
+        <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo">⚡ SurviveU</div>
             <ul class="sidebar-nav">
@@ -1041,12 +961,10 @@
             </div>
         </aside>
 
-        <!-- MAIN -->
-        <main class="main-content" id="mainContent">
-            <!-- Pages rendered here dynamically -->
-        </main>
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent"></main>
 
-        <!-- BOTTOM NAV -->
+        <!-- Bottom Nav -->
         <nav class="bottom-nav" id="bottomNav">
             <a data-page="dashboard" class="active"><i data-lucide="layout-dashboard"></i> Dashboard</a>
             <a data-page="expenses"><i data-lucide="receipt"></i> Pengeluaran</a>
@@ -1056,15 +974,13 @@
         </nav>
     </div>
 
-    <!-- TOAST CONTAINER -->
+    <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
-
-    <!-- MODAL CONTAINER -->
+    <!-- Modal Container -->
     <div id="modalContainer"></div>
 
     <script>
-        // ==================== FIREBASE CONFIG (PLACEHOLDER) ====================
-        // Ganti dengan config Firebase kamu sendiri
+        // Firebase Config (GANTI DENGAN PUNYAMU)
         const firebaseConfig = {
             apiKey: "AIzaSyDY93sCKMzh2YQEYhSKRH19l98T0XSgc58",
             authDomain: "keuangan-5d503.firebaseapp.com",
@@ -1075,11 +991,11 @@
             measurementId: "G-0JXN4HC4L6"
         };
 
+
         let firebaseAvailable = false;
         let db = null;
         let auth = null;
 
-        // Inisialisasi Firebase (jika config valid)
         try {
             if (FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "AIzaSyDY93sCKMzh2YQEYhSKRH19l98T0XSgc58") {
                 firebase.initializeApp(FIREBASE_CONFIG);
@@ -1092,101 +1008,75 @@
                 console.log('ℹ️ Firebase tidak dikonfigurasi, menggunakan localStorage');
             }
         } catch (e) {
-            console.warn('⚠️ Firebase gagal inisialisasi:', e.message);
+            console.warn('⚠️ Firebase gagal:', e.message);
         }
 
-        // ==================== STORAGE MANAGER ====================
+        // ---------- STORAGE MANAGER ----------
         class StorageManager {
             constructor() {
                 this.prefix = 'surviveu_';
                 this.localCache = {};
             }
-
             async getData(key) {
-                // Coba Firestore dulu jika tersedia dan user login
                 if (firebaseAvailable && auth && auth.currentUser && db) {
                     try {
-                        const doc = await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key)
-                            .get();
+                        const doc = await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key).get();
                         if (doc.exists) {
                             const data = doc.data().value;
-                            // Update local cache
                             this.localCache[key] = data;
                             localStorage.setItem(this.prefix + key, JSON.stringify(data));
                             return data;
                         }
-                    } catch (e) {
-                        console.warn('Firestore read fallback ke localStorage:', e.message);
-                    }
+                    } catch (e) { /* fallback */ }
                 }
-                // Fallback ke localStorage
                 const raw = localStorage.getItem(this.prefix + key);
-                if (raw) {
-                    try { return JSON.parse(raw); } catch { return raw; }
-                }
+                if (raw) { try { return JSON.parse(raw); } catch { return raw; } }
                 return this.localCache[key] || null;
             }
-
             async setData(key, value) {
                 this.localCache[key] = value;
                 localStorage.setItem(this.prefix + key, JSON.stringify(value));
-                // Simpan ke Firestore jika tersedia
                 if (firebaseAvailable && auth && auth.currentUser && db) {
                     try {
                         await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key).set({
                             value: value,
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                         }, { merge: true });
-                    } catch (e) {
-                        console.warn('Firestore write gagal, data tetap di localStorage');
-                    }
+                    } catch (e) { /* silent */ }
                 }
             }
-
             async removeData(key) {
                 delete this.localCache[key];
                 localStorage.removeItem(this.prefix + key);
                 if (firebaseAvailable && auth && auth.currentUser && db) {
-                    try {
-                        await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key).delete();
-                    } catch (e) { /* silent */ }
+                    try { await db.collection('users').doc(auth.currentUser.uid).collection('data').doc(key).delete(); } catch (e) { }
                 }
             }
-
-            async getAllKeys() {
+            async clearAll() {
                 const keys = [];
                 for (let i = 0; i < localStorage.length; i++) {
                     const k = localStorage.key(i);
                     if (k.startsWith(this.prefix)) keys.push(k.replace(this.prefix, ''));
                 }
-                return keys;
-            }
-
-            async clearAll() {
-                const keys = await this.getAllKeys();
-                for (const k of keys) {
-                    await this.removeData(k);
-                }
+                for (const k of keys) { await this.removeData(k); }
                 this.localCache = {};
             }
-
             async exportAll() {
                 const data = {};
-                const keys = await this.getAllKeys();
-                for (const k of keys) {
-                    data[k] = await this.getData(k);
+                const keys = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const k = localStorage.key(i);
+                    if (k.startsWith(this.prefix)) keys.push(k.replace(this.prefix, ''));
                 }
+                for (const k of keys) { data[k] = await this.getData(k); }
                 return data;
             }
-
             async importAll(data) {
-                for (const [k, v] of Object.entries(data)) {
-                    await this.setData(k, v);
-                }
+                for (const [k, v] of Object.entries(data)) { await this.setData(k, v); }
             }
         }
 
-        // ==================== FINANCE MANAGER ====================
+        // ---------- FINANCE MANAGER ----------
         class FinanceManager {
             constructor(storage) {
                 this.storage = storage;
@@ -1198,9 +1088,7 @@
                 this.monthEnd = '2026-05-31';
                 this.totalDays = 31;
             }
-
             async init() {
-                // Load data
                 this.initialMoney = (await this.storage.getData('initialMoney')) || 1000000;
                 this.currentBalance = (await this.storage.getData('currentBalance')) || this.initialMoney;
                 this.expenses = (await this.storage.getData('expenses')) || [];
@@ -1208,103 +1096,50 @@
                 this.monthStart = (await this.storage.getData('monthStart')) || '2026-05-01';
                 this.monthEnd = (await this.storage.getData('monthEnd')) || '2026-05-31';
                 this.totalDays = this.getDaysInMonth();
-                // Recalculate balance
                 await this.recalculateBalance();
                 return this;
             }
-
             getDefaultDebts() {
                 return [
-                    {
-                        id: 'd1', name: 'Hutang A (Prioritas)', amount: 157050, paid: 0, dueDate: '2026-05-15',
-                        priority: 'high', status: 'unpaid'
-                    },
-                    {
-                        id: 'd2', name: 'Hutang B', amount: 91675, paid: 0, dueDate: '2026-05-20', priority: 'medium',
-                        status: 'unpaid'
-                    },
-                    {
-                        id: 'd3', name: 'Hutang C', amount: 45000, paid: 0, dueDate: '2026-05-25', priority: 'low',
-                        status: 'unpaid'
-                    },
-                    {
-                        id: 'd4', name: 'Hutang D (Cicilan)', amount: 180000, paid: 0, dueDate: '2026-05-28',
-                        priority: 'high', status: 'unpaid'
-                    },
+                    { id: 'd1', name: 'Hutang A (Prioritas)', amount: 157050, paid: 0, dueDate: '2026-05-15', priority: 'high', status: 'unpaid' },
+                    { id: 'd2', name: 'Hutang B', amount: 91675, paid: 0, dueDate: '2026-05-20', priority: 'medium', status: 'unpaid' },
+                    { id: 'd3', name: 'Hutang C', amount: 45000, paid: 0, dueDate: '2026-05-25', priority: 'low', status: 'unpaid' },
+                    { id: 'd4', name: 'Hutang D (Cicilan)', amount: 180000, paid: 0, dueDate: '2026-05-28', priority: 'high', status: 'unpaid' },
                 ];
             }
-
             getDaysInMonth() {
                 const start = new Date(this.monthStart);
                 const end = new Date(this.monthEnd);
                 return Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
             }
-
-            getToday() {
-                const now = new Date();
-                return now.toISOString().split('T')[0];
-            }
-
+            getToday() { return new Date().toISOString().split('T')[0]; }
             getDaysRemaining() {
                 const today = new Date(this.getToday());
                 const end = new Date(this.monthEnd);
-                const diff = Math.floor((end - today) / (1000 * 60 * 60 * 24));
-                return Math.max(0, diff) + 1; // termasuk hari ini
+                return Math.max(0, Math.floor((end - today) / (1000 * 60 * 60 * 24))) + 1;
             }
-
             getDaysElapsed() {
                 const start = new Date(this.monthStart);
                 const today = new Date(this.getToday());
-                const diff = Math.floor((today - start) / (1000 * 60 * 60 * 24));
-                return Math.max(0, Math.min(diff, this.totalDays));
+                return Math.max(0, Math.min(Math.floor((today - start) / (1000 * 60 * 60 * 24)), this.totalDays));
             }
-
-            getTotalDebtRemaining() {
-                return this.debts.reduce((sum, d) => sum + (d.amount - (d.paid || 0)), 0);
-            }
-
-            getTotalDebtPaid() {
-                return this.debts.reduce((sum, d) => sum + (d.paid || 0), 0);
-            }
-
-            getTotalExpenses() {
-                return this.expenses.reduce((sum, e) => sum + e.amount, 0);
-            }
-
-            getMoneyAfterDebts() {
-                return this.currentBalance - this.getTotalDebtRemaining();
-            }
-
+            getTotalDebtRemaining() { return this.debts.reduce((s, d) => s + (d.amount - (d.paid || 0)), 0); }
+            getTotalDebtPaid() { return this.debts.reduce((s, d) => s + (d.paid || 0), 0); }
+            getTotalExpenses() { return this.expenses.reduce((s, e) => s + e.amount, 0); }
+            getMoneyAfterDebts() { return this.currentBalance - this.getTotalDebtRemaining(); }
             getSafeDailyBudget() {
                 const remaining = this.getMoneyAfterDebts();
                 const daysLeft = this.getDaysRemaining();
-                if (daysLeft <= 0) return 0;
-                return Math.max(0, remaining / daysLeft);
+                return daysLeft > 0 ? Math.max(0, remaining / daysLeft) : 0;
             }
-
-            getSafePerMeal() {
-                return Math.floor(this.getSafeDailyBudget() / 3);
-            }
-
-            getSafeTransport() {
-                return Math.floor(this.getSafeDailyBudget() * 0.25);
-            }
-
-            getEmergencyReserve() {
-                return Math.floor(this.getMoneyAfterDebts() * 0.1);
-            }
-
+            getSafePerMeal() { return Math.floor(this.getSafeDailyBudget() / 3); }
+            getSafeTransport() { return Math.floor(this.getSafeDailyBudget() * 0.25); }
+            getEmergencyReserve() { return Math.floor(this.getMoneyAfterDebts() * 0.1); }
             getTodayExpenses() {
                 const today = this.getToday();
-                return this.expenses.filter(e => e.date === today).reduce((sum, e) => sum + e.amount, 0);
+                return this.expenses.filter(e => e.date === today).reduce((s, e) => s + e.amount, 0);
             }
-
-            getSafeToSpendToday() {
-                const safeDaily = this.getSafeDailyBudget();
-                const spentToday = this.getTodayExpenses();
-                return Math.max(0, safeDaily - spentToday);
-            }
-
+            getSafeToSpendToday() { return Math.max(0, this.getSafeDailyBudget() - this.getTodayExpenses()); }
             getPredictedEmptyDate() {
                 const safeDaily = this.getSafeDailyBudget();
                 const remaining = this.getMoneyAfterDebts();
@@ -1314,20 +1149,16 @@
                 const emptyDate = new Date(today.getTime() + daysLeft * 24 * 60 * 60 * 1000);
                 return emptyDate.toISOString().split('T')[0];
             }
-
             getSurvivalPercentage() {
                 const totalNeeded = this.initialMoney;
                 const available = this.getMoneyAfterDebts();
                 const elapsed = this.getDaysElapsed();
                 const total = this.totalDays;
                 const expectedSpent = (totalNeeded / total) * elapsed;
-                const actualRemaining = available;
                 const expectedRemaining = totalNeeded - expectedSpent;
                 if (expectedRemaining <= 0) return 100;
-                const ratio = actualRemaining / expectedRemaining;
-                return Math.min(100, Math.max(0, Math.round(ratio * 100)));
+                return Math.min(100, Math.max(0, Math.round((available / expectedRemaining) * 100)));
             }
-
             getFinancialStatus() {
                 const survival = this.getSurvivalPercentage();
                 const moneyAfterDebts = this.getMoneyAfterDebts();
@@ -1336,7 +1167,6 @@
                 if (survival >= 50) return { status: 'waspada', label: 'WASPADA', cssClass: 'status-waspada' };
                 return { status: 'kritis', label: 'KRITIS', cssClass: 'status-kritis' };
             }
-
             async recalculateBalance() {
                 const totalExpenses = this.getTotalExpenses();
                 const totalDebtPaid = this.getTotalDebtPaid();
@@ -1344,7 +1174,6 @@
                 await this.storage.setData('currentBalance', this.currentBalance);
                 return this.currentBalance;
             }
-
             async addExpense(expense) {
                 expense.id = 'exp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                 expense.createdAt = new Date().toISOString();
@@ -1353,7 +1182,6 @@
                 await this.recalculateBalance();
                 return expense;
             }
-
             async updateExpense(id, updates) {
                 const idx = this.expenses.findIndex(e => e.id === id);
                 if (idx >= 0) {
@@ -1362,13 +1190,11 @@
                     await this.recalculateBalance();
                 }
             }
-
             async deleteExpense(id) {
                 this.expenses = this.expenses.filter(e => e.id !== id);
                 await this.storage.setData('expenses', this.expenses);
                 await this.recalculateBalance();
             }
-
             async addDebt(debt) {
                 debt.id = 'debt_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
                 debt.paid = debt.paid || 0;
@@ -1376,9 +1202,7 @@
                 this.debts.push(debt);
                 await this.storage.setData('debts', this.debts);
                 await this.recalculateBalance();
-                return debt;
             }
-
             async updateDebt(id, updates) {
                 const idx = this.debts.findIndex(d => d.id === id);
                 if (idx >= 0) {
@@ -1391,13 +1215,11 @@
                     await this.recalculateBalance();
                 }
             }
-
             async deleteDebt(id) {
                 this.debts = this.debts.filter(d => d.id !== id);
                 await this.storage.setData('debts', this.debts);
                 await this.recalculateBalance();
             }
-
             async markDebtPaid(id) {
                 const idx = this.debts.findIndex(d => d.id === id);
                 if (idx >= 0) {
@@ -1407,7 +1229,6 @@
                     await this.recalculateBalance();
                 }
             }
-
             async resetMonth(newInitial) {
                 this.initialMoney = newInitial || 1000000;
                 this.currentBalance = this.initialMoney;
@@ -1427,39 +1248,26 @@
                 await this.storage.setData('monthStart', this.monthStart);
                 await this.storage.setData('monthEnd', this.monthEnd);
             }
-
             getDailyExpenseSummary() {
                 const summary = {};
-                this.expenses.forEach(e => {
-                    if (!summary[e.date]) summary[e.date] = 0;
-                    summary[e.date] += e.amount;
-                });
+                this.expenses.forEach(e => { summary[e.date] = (summary[e.date] || 0) + e.amount; });
                 return summary;
             }
-
             getCategorySummary() {
                 const summary = {};
-                this.expenses.forEach(e => {
-                    const cat = e.category || 'Lainnya';
-                    if (!summary[cat]) summary[cat] = 0;
-                    summary[cat] += e.amount;
-                });
+                this.expenses.forEach(e => { const cat = e.category || 'Lainnya'; summary[cat] = (summary[cat] || 0) + e.amount; });
                 return summary;
             }
-
             getWeeklySummary() {
                 const weeks = {};
                 this.expenses.forEach(e => {
                     const d = new Date(e.date);
-                    const weekNum = Math.ceil((d.getDate() + new Date(d.getFullYear(), d.getMonth(), 1).getDay()) /
-                        7);
+                    const weekNum = Math.ceil((d.getDate() + new Date(d.getFullYear(), d.getMonth(), 1).getDay()) / 7);
                     const key = 'Minggu ke-' + weekNum;
-                    if (!weeks[key]) weeks[key] = 0;
-                    weeks[key] += e.amount;
+                    weeks[key] = (weeks[key] || 0) + e.amount;
                 });
                 return weeks;
             }
-
             getSmartAlerts() {
                 const alerts = [];
                 const status = this.getFinancialStatus();
@@ -1468,109 +1276,49 @@
                 const moneyAfterDebts = this.getMoneyAfterDebts();
                 const daysRemaining = this.getDaysRemaining();
 
-                if (status.status === 'bangkrut') {
-                    alerts.push({
-                        type: 'danger',
-                        msg: '⚠️ MODE BANGKRUT! Uang tidak cukup untuk menutupi hutang. Segera cari pemasukan tambahan!'
-                    });
-                } else if (status.status === 'kritis') {
-                    alerts.push({
-                        type: 'danger',
-                        msg: '🔴 Mode Kritis! Uangmu mungkin tidak cukup sampai akhir bulan. Hemat segera!'
-                    });
-                } else if (status.status === 'waspada') {
-                    alerts.push({
-                        type: 'warning',
-                        msg: '🟡 Mode Waspada. Pengeluaran mulai berbahaya, kurangi pengeluaran tidak penting.'
-                    });
-                }
+                if (status.status === 'bangkrut') alerts.push({ type: 'danger', msg: '⚠️ MODE BANGKRUT! Uang tidak cukup untuk menutupi hutang.' });
+                else if (status.status === 'kritis') alerts.push({ type: 'danger', msg: '🔴 Mode Kritis! Uang mungkin tidak cukup sampai akhir bulan.' });
+                else if (status.status === 'waspada') alerts.push({ type: 'warning', msg: '🟡 Mode Waspada. Pengeluaran mulai berbahaya.' });
 
-                if (todayExp > safeDaily * 1.5) {
-                    alerts.push({
-                        type: 'danger',
-                        msg: `💸 Hari ini kamu terlalu boros! Pengeluaran Rp${todayExp.toLocaleString('id-ID')} vs budget Rp${Math.floor(safeDaily).toLocaleString('id-ID')}`
-                    });
-                } else if (todayExp > safeDaily) {
-                    alerts.push({
-                        type: 'warning',
-                        msg: `⚡ Hati-hati, pengeluaran hari ini sudah di atas batas aman harian.`
-                    });
-                }
+                if (todayExp > safeDaily * 1.5) alerts.push({ type: 'danger', msg: `💸 Hari ini terlalu boros!` });
+                else if (todayExp > safeDaily) alerts.push({ type: 'warning', msg: '⚡ Pengeluaran hari ini di atas batas aman.' });
 
-                const highPriorityUnpaid = this.debts.filter(d => d.priority === 'high' && d.status === 'unpaid');
-                if (highPriorityUnpaid.length > 0) {
-                    alerts.push({
-                        type: 'warning',
-                        msg: `📌 ${highPriorityUnpaid.length} hutang prioritas tinggi belum dibayar! Total: Rp${highPriorityUnpaid.reduce((s, d) => s + (d.amount - d.paid), 0).toLocaleString('id-ID')}`
-                    });
-                }
+                const highUnpaid = this.debts.filter(d => d.priority === 'high' && d.status === 'unpaid');
+                if (highUnpaid.length > 0) alerts.push({ type: 'warning', msg: `📌 ${highUnpaid.length} hutang prioritas tinggi belum dibayar.` });
 
-                if (moneyAfterDebts <= 0.05 * this.initialMoney && moneyAfterDebts > 0) {
-                    alerts.push({
-                        type: 'info',
-                        msg: '🔔 Mode Hemat Ekstrem aktif. Hanya boleh beli kebutuhan pokok.'
-                    });
-                }
-
-                const predEmpty = this.getPredictedEmptyDate();
-                const predEmptyDate = new Date(predEmpty);
+                const predEmptyDate = new Date(this.getPredictedEmptyDate());
                 const monthEndDate = new Date(this.monthEnd);
                 if (predEmptyDate < monthEndDate && status.status !== 'bangkrut') {
-                    const diffDays = Math.floor((monthEndDate - predEmptyDate) / (1000 * 60 * 60 * 24));
-                    alerts.push({
-                        type: 'warning',
-                        msg: `📉 Jika lanjut begini, uang habis sekitar ${predEmpty} (${diffDays} hari sebelum akhir bulan).`
-                    });
+                    alerts.push({ type: 'warning', msg: `📉 Prediksi uang habis sebelum akhir bulan.` });
                 }
 
-                if (alerts.length === 0 && status.status === 'aman') {
-                    alerts.push({
-                        type: 'info',
-                        msg: '✅ Keuanganmu masih aman. Tapi jangan sok kaya ya, tetap hemat!'
-                    });
-                }
-
+                if (alerts.length === 0 && status.status === 'aman') alerts.push({ type: 'info', msg: '✅ Keuangan masih aman. Tetap hemat!' });
                 return alerts;
             }
         }
 
-        // ==================== AUTH MANAGER ====================
+        // ---------- AUTH MANAGER ----------
         class AuthManager {
-            constructor(storage) {
-                this.storage = storage;
-                this.user = null;
-                this.isGuest = false;
-            }
-
+            constructor(storage) { this.storage = storage; this.user = null; this.isGuest = false; }
             async init() {
                 const savedUser = await this.storage.getData('authUser');
-                if (savedUser) {
-                    this.user = savedUser;
-                    this.isGuest = savedUser.isGuest || false;
-                }
+                if (savedUser) { this.user = savedUser; this.isGuest = savedUser.isGuest || false; }
                 if (firebaseAvailable && auth) {
                     return new Promise((resolve) => {
                         const unsubscribe = auth.onAuthStateChanged(async (fbUser) => {
                             unsubscribe();
                             if (fbUser) {
-                                this.user = {
-                                    uid: fbUser.uid,
-                                    email: fbUser.email,
-                                    displayName: fbUser.displayName || fbUser.email,
-                                    isGuest: false
-                                };
+                                this.user = { uid: fbUser.uid, email: fbUser.email, displayName: fbUser.displayName || fbUser.email, isGuest: false };
                                 this.isGuest = false;
                                 await this.storage.setData('authUser', this.user);
                             }
                             resolve(this.user);
                         });
-                        // Timeout jika Firebase lambat
                         setTimeout(() => resolve(this.user), 3000);
                     });
                 }
                 return this.user;
             }
-
             async register(email, password, name) {
                 if (firebaseAvailable && auth) {
                     const cred = await auth.createUserWithEmailAndPassword(email, password);
@@ -1583,74 +1331,44 @@
                 await this.storage.setData('authUser', this.user);
                 return this.user;
             }
-
             async login(email, password) {
                 if (firebaseAvailable && auth) {
                     const cred = await auth.signInWithEmailAndPassword(email, password);
-                    this.user = {
-                        uid: cred.user.uid,
-                        email: cred.user.email,
-                        displayName: cred.user.displayName || cred.user.email,
-                        isGuest: false
-                    };
+                    this.user = { uid: cred.user.uid, email: cred.user.email, displayName: cred.user.displayName || cred.user.email, isGuest: false };
                 } else {
                     const saved = await this.storage.getData('authUser');
-                    if (saved && saved.email === email) {
-                        this.user = saved;
-                    } else {
-                        this.user = { uid: 'local_' + Date.now(), email, displayName: email, isGuest: false };
-                    }
+                    this.user = (saved && saved.email === email) ? saved : { uid: 'local_' + Date.now(), email, displayName: email, isGuest: false };
                 }
                 this.isGuest = false;
                 await this.storage.setData('authUser', this.user);
                 return this.user;
             }
-
             async loginAsGuest() {
                 this.user = { uid: 'guest_' + Date.now(), email: 'guest@surviveu.app', displayName: 'Guest', isGuest: true };
                 this.isGuest = true;
                 await this.storage.setData('authUser', this.user);
-                if (firebaseAvailable && auth) {
-                    try {
-                        await auth.signInAnonymously();
-                    } catch (e) { /* silent */ }
-                }
+                if (firebaseAvailable && auth) { try { await auth.signInAnonymously(); } catch (e) { } }
                 return this.user;
             }
-
             async logout() {
-                this.user = null;
-                this.isGuest = false;
+                this.user = null; this.isGuest = false;
                 await this.storage.removeData('authUser');
-                if (firebaseAvailable && auth) {
-                    try { await auth.signOut(); } catch (e) { /* silent */ }
-                }
+                if (firebaseAvailable && auth) { try { await auth.signOut(); } catch (e) { } }
             }
-
-            isLoggedIn() {
-                return !!this.user;
-            }
+            isLoggedIn() { return !!this.user; }
         }
 
-        // ==================== UI MANAGER ====================
+        // ---------- UI MANAGER ----------
         class UIManager {
-            constructor() {
-                this.currentPage = 'dashboard';
-                this.toastTimers = [];
-            }
-
+            constructor() { this.currentPage = 'dashboard'; }
             showToast(msg, type = 'info') {
                 const container = document.getElementById('toastContainer');
                 const toast = document.createElement('div');
                 toast.className = `toast toast-${type}`;
                 toast.textContent = msg;
                 container.appendChild(toast);
-                const timer = setTimeout(() => {
-                    if (toast.parentNode) toast.remove();
-                }, 3000);
-                this.toastTimers.push(timer);
+                setTimeout(() => { if (toast.parentNode) toast.remove(); }, 3000);
             }
-
             showModal(title, contentHtml, onConfirm, confirmText = 'Simpan') {
                 const container = document.getElementById('modalContainer');
                 const overlay = document.createElement('div');
@@ -1659,41 +1377,29 @@
                     <div class="modal glass">
                         <h3>${title}</h3>
                         <div>${contentHtml}</div>
-                        <div class="modal-actions">
+                        <div class="modal-actions" style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px;">
                             <button class="btn btn-outline btn-sm cancel-btn">Batal</button>
                             <button class="btn btn-primary btn-sm confirm-btn">${confirmText}</button>
                         </div>
                     </div>
                 `;
                 container.appendChild(overlay);
-
                 const close = () => overlay.remove();
                 overlay.querySelector('.cancel-btn').addEventListener('click', close);
                 overlay.querySelector('.confirm-btn').addEventListener('click', () => {
-                    if (onConfirm) {
-                        const result = onConfirm(overlay);
-                        if (result !== false) close();
-                    } else {
-                        close();
-                    }
+                    if (onConfirm) { const result = onConfirm(overlay); if (result !== false) close(); }
+                    else close();
                 });
-                overlay.addEventListener('click', (e) => {
-                    if (e.target === overlay) close();
-                });
+                overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
                 return overlay;
             }
-
             navigateTo(page) {
                 this.currentPage = page;
-                document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(a => a.classList.remove(
-                    'active'));
+                document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(a => a.classList.remove('active'));
                 document.querySelectorAll(`[data-page="${page}"]`).forEach(a => a.classList.add('active'));
-                // Close sidebar on mobile
                 document.getElementById('sidebar').classList.remove('open');
-                // Dispatch event
                 document.dispatchEvent(new CustomEvent('pageChange', { detail: { page } }));
             }
-
             updateSidebarUser(user) {
                 const name = user ? (user.displayName || 'Mahasiswa') : 'Mahasiswa';
                 const role = user ? (user.isGuest ? 'Guest' : 'User') : 'Guest';
@@ -1701,141 +1407,62 @@
                 document.getElementById('sidebarRole').textContent = role;
                 document.getElementById('sidebarAvatar').textContent = name.charAt(0).toUpperCase();
             }
-
-            formatRupiah(num) {
-                return 'Rp' + Math.round(num).toLocaleString('id-ID');
-            }
-
+            formatRupiah(num) { return 'Rp' + Math.round(num).toLocaleString('id-ID'); }
             formatDate(dateStr) {
                 if (!dateStr) return '-';
                 const d = new Date(dateStr);
                 return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
             }
-
             getStatusBadge(statusObj) {
                 return `<span class="status-badge ${statusObj.cssClass}">${statusObj.label}</span>`;
             }
         }
 
-        // ==================== ANALYTICS MANAGER ====================
+        // ---------- ANALYTICS MANAGER ----------
         class AnalyticsManager {
-            constructor(financeManager) {
-                this.fm = financeManager;
-                this.charts = {};
-            }
-
-            destroyCharts() {
-                Object.values(this.charts).forEach(c => {
-                    if (c && c.destroy) c.destroy();
-                });
-                this.charts = {};
-            }
-
+            constructor(financeManager) { this.fm = financeManager; this.charts = {}; }
+            destroyCharts() { Object.values(this.charts).forEach(c => { if (c && c.destroy) c.destroy(); }); this.charts = {}; }
             renderDailyChart(canvasId) {
                 const canvas = document.getElementById(canvasId);
                 if (!canvas) return;
                 if (this.charts[canvasId]) this.charts[canvasId].destroy();
-
                 const dailySummary = this.fm.getDailyExpenseSummary();
                 const sorted = Object.entries(dailySummary).sort((a, b) => a[0].localeCompare(b[0]));
-                const labels = sorted.map(s => {
-                    const d = new Date(s[0]);
-                    return d.getDate() + '/' + (d.getMonth() + 1);
-                });
+                const labels = sorted.map(s => { const d = new Date(s[0]); return d.getDate() + '/' + (d.getMonth() + 1); });
                 const data = sorted.map(s => s[1]);
-
-                const ctx = canvas.getContext('2d');
-                this.charts[canvasId] = new Chart(ctx, {
+                this.charts[canvasId] = new Chart(canvas, {
                     type: 'bar',
-                    data: {
-                        labels: labels.length > 0 ? labels : ['Belum ada'],
-                        datasets: [{
-                            label: 'Pengeluaran Harian',
-                            data: data.length > 0 ? data : [0],
-                            backgroundColor: 'rgba(108,92,231,0.5)',
-                            borderColor: 'rgba(108,92,231,1)',
-                            borderWidth: 1,
-                            borderRadius: 6,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                        },
-                        scales: {
-                            x: { ticks: { color: '#a0a0b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.03)' } },
-                            y: {
-                                ticks: {
-                                    color: '#a0a0b8', font: { size: 10 },
-                                    callback: v => 'Rp' + v.toLocaleString('id-ID')
-                                }, grid: { color: 'rgba(255,255,255,0.04)' }
-                            },
-                        },
-                    },
+                    data: { labels: labels.length ? labels : ['Belum ada'], datasets: [{ label: 'Pengeluaran Harian', data: data.length ? data : [0], backgroundColor: 'rgba(108,92,231,0.5)', borderColor: 'rgba(108,92,231,1)', borderWidth: 1, borderRadius: 6 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#a0a0b8', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.03)' } }, y: { ticks: { color: '#a0a0b8', font: { size: 10 }, callback: v => 'Rp' + v.toLocaleString('id-ID') }, grid: { color: 'rgba(255,255,255,0.04)' } } } }
                 });
             }
-
             renderCategoryChart(canvasId) {
                 const canvas = document.getElementById(canvasId);
                 if (!canvas) return;
                 if (this.charts[canvasId]) this.charts[canvasId].destroy();
-
                 const catSummary = this.fm.getCategorySummary();
                 const entries = Object.entries(catSummary).sort((a, b) => b[1] - a[1]);
-                const labels = entries.map(e => e[0]);
-                const data = entries.map(e => e[1]);
                 const colors = ['#6c5ce7', '#ff5252', '#f9a825', '#00d2a0', '#448aff', '#ff8230', '#a29bfe', '#ff6e6e'];
-
-                const ctx = canvas.getContext('2d');
-                this.charts[canvasId] = new Chart(ctx, {
+                this.charts[canvasId] = new Chart(canvas, {
                     type: 'doughnut',
-                    data: {
-                        labels: labels.length > 0 ? labels : ['Belum ada data'],
-                        datasets: [{
-                            data: data.length > 0 ? data : [1],
-                            backgroundColor: colors.slice(0, Math.max(labels.length, 1)),
-                            borderColor: 'rgba(0,0,0,0.3)',
-                            borderWidth: 2,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: { color: '#a0a0b8', font: { size: 10 }, padding: 14 }
-                            },
-                        },
-                    },
+                    data: { labels: entries.length ? entries.map(e => e[0]) : ['Belum ada data'], datasets: [{ data: entries.length ? entries.map(e => e[1]) : [1], backgroundColor: colors.slice(0, Math.max(entries.length, 1)), borderColor: 'rgba(0,0,0,0.3)', borderWidth: 2 }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#a0a0b8', font: { size: 10 }, padding: 14 } } } }
                 });
             }
-
             getFinancialHealthScore() {
                 const survival = this.fm.getSurvivalPercentage();
-                const debtRatio = this.fm.initialMoney > 0 ? (this.fm.getTotalDebtRemaining() / this.fm.initialMoney) *
-                    100 : 0;
-                const score = Math.max(0, Math.min(100, Math.round(survival * 0.7 + (100 - debtRatio) * 0.3)));
-                return score;
+                const debtRatio = this.fm.initialMoney > 0 ? (this.fm.getTotalDebtRemaining() / this.fm.initialMoney) * 100 : 0;
+                return Math.max(0, Math.min(100, Math.round(survival * 0.7 + (100 - debtRatio) * 0.3)));
             }
-
             getMostDangerousCategory() {
                 const catSummary = this.fm.getCategorySummary();
-                let maxCat = null;
-                let maxVal = 0;
-                for (const [cat, val] of Object.entries(catSummary)) {
-                    if (val > maxVal) {
-                        maxVal = val;
-                        maxCat = cat;
-                    }
-                }
+                let maxCat = null, maxVal = 0;
+                for (const [cat, val] of Object.entries(catSummary)) { if (val > maxVal) { maxVal = val; maxCat = cat; } }
                 return { category: maxCat, amount: maxVal };
             }
         }
 
-        // ==================== MAIN APP ====================
+        // ---------- MAIN APP ----------
         class App {
             constructor() {
                 this.storage = new StorageManager();
@@ -1845,26 +1472,19 @@
                 this.analytics = null;
                 this.isInitialized = false;
             }
-
             async init() {
-                // Init auth
                 const user = await this.auth.init();
-                // Init finance
                 await this.finance.init();
-                // Init analytics
                 this.analytics = new AnalyticsManager(this.finance);
-
                 if (this.auth.isLoggedIn()) {
                     this.showApp();
                 } else {
                     this.showAuth();
                 }
-
                 this.setupEventListeners();
                 this.isInitialized = true;
                 console.log('✅ SurviveU initialized');
             }
-
             showAuth() {
                 document.getElementById('authScreen').style.display = 'flex';
                 document.getElementById('appContainer').style.display = 'none';
@@ -1874,28 +1494,20 @@
                 document.getElementById('authError').style.display = 'none';
                 this.authMode = 'login';
             }
-
             showApp() {
                 document.getElementById('authScreen').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'flex';
                 this.ui.updateSidebarUser(this.auth.user);
                 this.ui.navigateTo('dashboard');
                 this.renderPage('dashboard');
-                this.loadLucide();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
-
             setupEventListeners() {
-                // Auth events
                 document.getElementById('authSubmitBtn').addEventListener('click', () => this.handleAuthSubmit());
                 document.getElementById('authToggleMode').addEventListener('click', () => this.toggleAuthMode());
                 document.getElementById('authGuestBtn').addEventListener('click', () => this.handleGuestLogin());
                 document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
 
-                document.getElementById('menuToggle')?.addEventListener('click', () => {
-                    document.getElementById('sidebar').classList.toggle('open');
-                });
-
-                // Navigation
                 document.querySelectorAll('.sidebar-nav a, .bottom-nav a').forEach(a => {
                     a.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -1905,23 +1517,22 @@
                     });
                 });
 
-                // Page change listener
-                document.addEventListener('pageChange', (e) => {
-                    this.renderPage(e.detail.page);
-                });
+                document.addEventListener('pageChange', (e) => { this.renderPage(e.detail.page); });
 
-                // Sidebar user click
                 document.getElementById('sidebarUser').addEventListener('click', (e) => {
                     if (e.target.closest('#logoutBtn')) return;
                     this.ui.navigateTo('settings');
                     this.renderPage('settings');
                 });
 
-                // Mobile: swipe to open sidebar
-                let touchStartX = 0;
-                document.addEventListener('touchstart', (e) => {
-                    touchStartX = e.touches[0].clientX;
+                // Hamburger menu
+                document.getElementById('menuToggle')?.addEventListener('click', () => {
+                    document.getElementById('sidebar').classList.toggle('open');
                 });
+
+                // Swipe to open sidebar
+                let touchStartX = 0;
+                document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
                 document.addEventListener('touchend', (e) => {
                     const diff = e.changedTouches[0].clientX - touchStartX;
                     if (diff > 70 && touchStartX < 30 && window.innerWidth <= 768) {
@@ -1932,7 +1543,6 @@
                     }
                 });
 
-                // Keyboard shortcut
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         document.getElementById('sidebar').classList.remove('open');
@@ -1940,26 +1550,15 @@
                     }
                 });
             }
-
             async handleAuthSubmit() {
                 const email = document.getElementById('authEmail').value.trim();
                 const password = document.getElementById('authPassword').value.trim();
                 const name = document.getElementById('authName').value.trim();
                 const errorEl = document.getElementById('authError');
-
-                if (!email || !password) {
-                    errorEl.textContent = 'Email dan password wajib diisi.';
-                    errorEl.style.display = 'block';
-                    return;
-                }
-
+                if (!email || !password) { errorEl.textContent = 'Email dan password wajib diisi.'; errorEl.style.display = 'block'; return; }
                 try {
                     if (this.authMode === 'register') {
-                        if (!name) {
-                            errorEl.textContent = 'Nama lengkap wajib diisi untuk registrasi.';
-                            errorEl.style.display = 'block';
-                            return;
-                        }
+                        if (!name) { errorEl.textContent = 'Nama lengkap wajib diisi.'; errorEl.style.display = 'block'; return; }
                         await this.auth.register(email, password, name);
                     } else {
                         await this.auth.login(email, password);
@@ -1970,18 +1569,16 @@
                     this.showApp();
                     this.ui.showToast('Selamat datang! 👋', 'success');
                 } catch (e) {
-                    errorEl.textContent = 'Gagal: ' + (e.message || 'Periksa kembali kredensial.');
+                    errorEl.textContent = 'Gagal: ' + (e.message || 'Periksa kredensial.');
                     errorEl.style.display = 'block';
                 }
             }
-
             toggleAuthMode() {
                 const nameInput = document.getElementById('authName');
                 const submitBtn = document.getElementById('authSubmitBtn');
                 const toggleBtn = document.getElementById('authToggleMode');
                 const errorEl = document.getElementById('authError');
                 errorEl.style.display = 'none';
-
                 if (this.authMode === 'login') {
                     this.authMode = 'register';
                     nameInput.style.display = 'block';
@@ -1994,7 +1591,6 @@
                     toggleBtn.textContent = 'Belum punya akun? Daftar';
                 }
             }
-
             async handleGuestLogin() {
                 await this.auth.loginAsGuest();
                 await this.finance.init();
@@ -2002,47 +1598,24 @@
                 this.showApp();
                 this.ui.showToast('Masuk sebagai Guest 👀', 'info');
             }
-
             async handleLogout() {
                 await this.auth.logout();
                 this.ui.showToast('Berhasil logout 👋', 'info');
                 this.showAuth();
             }
-
-            loadLucide() {
-                setTimeout(() => {
-                    if (typeof lucide !== 'undefined') {
-                        lucide.createIcons();
-                    }
-                }, 100);
-            }
-
-            // ==================== RENDER PAGES ====================
             renderPage(page) {
                 const main = document.getElementById('mainContent');
                 this.analytics.destroyCharts();
                 switch (page) {
-                    case 'dashboard':
-                        main.innerHTML = this.renderDashboard();
-                        break;
-                    case 'expenses':
-                        main.innerHTML = this.renderExpenses();
-                        break;
-                    case 'debts':
-                        main.innerHTML = this.renderDebts();
-                        break;
-                    case 'analytics':
-                        main.innerHTML = this.renderAnalytics();
-                        break;
-                    case 'settings':
-                        main.innerHTML = this.renderSettings();
-                        break;
-                    default:
-                        main.innerHTML = this.renderDashboard();
+                    case 'dashboard': main.innerHTML = this.renderDashboard(); break;
+                    case 'expenses': main.innerHTML = this.renderExpenses(); break;
+                    case 'debts': main.innerHTML = this.renderDebts(); break;
+                    case 'analytics': main.innerHTML = this.renderAnalytics(); break;
+                    case 'settings': main.innerHTML = this.renderSettings(); break;
+                    default: main.innerHTML = this.renderDashboard();
                 }
-                this.loadLucide();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
                 this.bindPageEvents(page);
-                // Render charts after DOM update
                 setTimeout(() => {
                     if (page === 'analytics') {
                         this.analytics.renderDailyChart('dailyChart');
@@ -2053,26 +1626,16 @@
                     }
                 }, 200);
             }
-
             bindPageEvents(page) {
                 if (page === 'expenses') {
                     document.getElementById('btnAddExpense')?.addEventListener('click', () => this.showExpenseModal());
-                    document.querySelectorAll('.expense-edit-btn').forEach(btn => {
-                        btn.addEventListener('click', () => this.showExpenseModal(btn.dataset.id));
-                    });
-                    document.querySelectorAll('.expense-delete-btn').forEach(btn => {
-                        btn.addEventListener('click', () => this.deleteExpense(btn.dataset.id));
-                    });
-                    document.getElementById('fabAddExpense')?.addEventListener('click', () => this.showExpenseModal());
+                    document.querySelectorAll('.expense-edit-btn').forEach(b => b.addEventListener('click', () => this.showExpenseModal(b.dataset.id)));
+                    document.querySelectorAll('.expense-delete-btn').forEach(b => b.addEventListener('click', () => this.deleteExpense(b.dataset.id)));
                 }
                 if (page === 'debts') {
                     document.getElementById('btnAddDebt')?.addEventListener('click', () => this.showDebtModal());
-                    document.querySelectorAll('.debt-pay-btn').forEach(btn => {
-                        btn.addEventListener('click', () => this.markDebtPaid(btn.dataset.id));
-                    });
-                    document.querySelectorAll('.debt-delete-btn').forEach(btn => {
-                        btn.addEventListener('click', () => this.deleteDebt(btn.dataset.id));
-                    });
+                    document.querySelectorAll('.debt-pay-btn').forEach(b => b.addEventListener('click', () => this.markDebtPaid(b.dataset.id)));
+                    document.querySelectorAll('.debt-delete-btn').forEach(b => b.addEventListener('click', () => this.deleteDebt(b.dataset.id)));
                 }
                 if (page === 'settings') {
                     document.getElementById('btnSaveSettings')?.addEventListener('click', () => this.saveSettings());
@@ -2082,167 +1645,66 @@
                     document.getElementById('btnResetMonth')?.addEventListener('click', () => this.resetMonth());
                 }
             }
-
-            // ==================== DASHBOARD ====================
             renderDashboard() {
                 const fm = this.finance;
                 const status = fm.getFinancialStatus();
                 const alerts = fm.getSmartAlerts();
                 const survivalPct = fm.getSurvivalPercentage();
                 const healthScore = this.analytics.getFinancialHealthScore();
-
                 let alertsHtml = '';
                 alerts.forEach(a => {
-                    alertsHtml +=
-                        `<div class="alert-banner alert-${a.type}"><i data-lucide="alert-triangle" style="width:18px;height:18px;"></i> ${a.msg}</div>`;
+                    alertsHtml += `<div class="alert-banner alert-${a.type}"><i data-lucide="alert-triangle" style="width:18px;height:18px;"></i> ${a.msg}</div>`;
                 });
-
-                const survivalColor = survivalPct >= 80 ? 'fill-success' : survivalPct >= 50 ? 'fill-warning' :
-                    'fill-danger';
-                const healthColor = healthScore >= 70 ? 'fill-success' : healthScore >= 40 ? 'fill-warning' :
-                    'fill-danger';
-
+                const survivalColor = survivalPct >= 80 ? 'fill-success' : survivalPct >= 50 ? 'fill-warning' : 'fill-danger';
+                const healthColor = healthScore >= 70 ? 'fill-success' : healthScore >= 40 ? 'fill-warning' : 'fill-danger';
                 return `
-                    <div class="page-header">
-                        <h1>📊 Dashboard Finansial</h1>
-                        <p class="subtitle">${fm.getToday()} • ${fm.getDaysRemaining()} hari tersisa</p>
-                    </div>
+                    <div class="page-header"><h1>📊 Dashboard Finansial</h1><p class="subtitle">${fm.getToday()} • ${fm.getDaysRemaining()} hari tersisa</p></div>
                     ${alertsHtml}
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-                        ${this.ui.getStatusBadge(status)}
-                        <span style="font-size:0.8rem;color:var(--text-muted);">Financial Health: <b>${healthScore}/100</b></span>
-                    </div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap;">${this.ui.getStatusBadge(status)}<span style="font-size:0.8rem;color:var(--text-muted);">Financial Health: <b>${healthScore}/100</b></span></div>
                     <div class="cards-grid">
-                        <div class="stat-card">
-                            <div class="card-icon icon-purple"><i data-lucide="wallet"></i></div>
-                            <div class="card-label">Saldo Saat Ini</div>
-                            <div class="card-value">${this.ui.formatRupiah(fm.currentBalance)}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="card-icon icon-blue"><i data-lucide="banknote"></i></div>
-                            <div class="card-label">Uang Awal Bulan</div>
-                            <div class="card-value">${this.ui.formatRupiah(fm.initialMoney)}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="card-icon icon-red"><i data-lucide="credit-card"></i></div>
-                            <div class="card-label">Total Hutang Tersisa</div>
-                            <div class="card-value">${this.ui.formatRupiah(fm.getTotalDebtRemaining())}</div>
-                            <div class="card-sub">Terbayar: ${this.ui.formatRupiah(fm.getTotalDebtPaid())}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="card-icon icon-green"><i data-lucide="piggy-bank"></i></div>
-                            <div class="card-label">Uang Setelah Hutang</div>
-                            <div class="card-value">${this.ui.formatRupiah(fm.getMoneyAfterDebts())}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="card-icon icon-orange"><i data-lucide="clock"></i></div>
-                            <div class="card-label">Budget Aman/Hari</div>
-                            <div class="card-value">${this.ui.formatRupiah(fm.getSafeDailyBudget())}</div>
-                            <div class="card-sub">Safe-to-spend hari ini: ${this.ui.formatRupiah(fm.getSafeToSpendToday())}</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="card-icon icon-blue"><i data-lucide="calendar-x"></i></div>
-                            <div class="card-label">Prediksi Uang Habis</div>
-                            <div class="card-value" style="font-size:1rem;">${fm.getPredictedEmptyDate()}</div>
-                        </div>
+                        <div class="stat-card"><div class="card-icon icon-purple"><i data-lucide="wallet"></i></div><div class="card-label">Saldo Saat Ini</div><div class="card-value">${this.ui.formatRupiah(fm.currentBalance)}</div></div>
+                        <div class="stat-card"><div class="card-icon icon-blue"><i data-lucide="banknote"></i></div><div class="card-label">Uang Awal Bulan</div><div class="card-value">${this.ui.formatRupiah(fm.initialMoney)}</div></div>
+                        <div class="stat-card"><div class="card-icon icon-red"><i data-lucide="credit-card"></i></div><div class="card-label">Total Hutang Tersisa</div><div class="card-value">${this.ui.formatRupiah(fm.getTotalDebtRemaining())}</div><div class="card-sub">Terbayar: ${this.ui.formatRupiah(fm.getTotalDebtPaid())}</div></div>
+                        <div class="stat-card"><div class="card-icon icon-green"><i data-lucide="piggy-bank"></i></div><div class="card-label">Uang Setelah Hutang</div><div class="card-value">${this.ui.formatRupiah(fm.getMoneyAfterDebts())}</div></div>
+                        <div class="stat-card"><div class="card-icon icon-orange"><i data-lucide="clock"></i></div><div class="card-label">Budget Aman/Hari</div><div class="card-value">${this.ui.formatRupiah(fm.getSafeDailyBudget())}</div><div class="card-sub">Safe-to-spend: ${this.ui.formatRupiah(fm.getSafeToSpendToday())}</div></div>
+                        <div class="stat-card"><div class="card-icon icon-blue"><i data-lucide="calendar-x"></i></div><div class="card-label">Prediksi Uang Habis</div><div class="card-value" style="font-size:1rem;">${fm.getPredictedEmptyDate()}</div></div>
                     </div>
                     <div class="cards-grid" style="grid-template-columns:1fr 1fr;">
-                        <div class="stat-card">
-                            <div class="card-label">Survival Bulan Ini</div>
-                            <div class="progress-wrap">
-                                <div class="progress-label"><span>${survivalPct}%</span><span>Target 100%</span></div>
-                                <div class="progress-bar"><div class="progress-fill ${survivalColor}" style="width:${survivalPct}%;"></div></div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="card-label">Financial Health Score</div>
-                            <div class="progress-wrap">
-                                <div class="progress-label"><span>${healthScore}/100</span></div>
-                                <div class="progress-bar"><div class="progress-fill ${healthColor}" style="width:${healthScore}%;"></div></div>
-                            </div>
-                        </div>
+                        <div class="stat-card"><div class="card-label">Survival Bulan Ini</div><div class="progress-wrap"><div class="progress-label"><span>${survivalPct}%</span><span>Target 100%</span></div><div class="progress-bar"><div class="progress-fill ${survivalColor}" style="width:${survivalPct}%;"></div></div></div></div>
+                        <div class="stat-card"><div class="card-label">Financial Health Score</div><div class="progress-wrap"><div class="progress-label"><span>${healthScore}/100</span></div><div class="progress-bar"><div class="progress-fill ${healthColor}" style="width:${healthScore}%;"></div></div></div></div>
                     </div>
-                    <div class="glass-sm" style="padding:16px;margin-top:6px;">
-                        <h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-secondary);">📈 Pengeluaran Harian (Quick View)</h4>
-                        <div class="chart-container" style="height:220px;"><canvas id="dashboardDailyChart"></canvas></div>
-                    </div>
+                    <div class="glass-sm" style="padding:16px;margin-top:6px;"><h4 style="font-size:0.85rem;margin-bottom:8px;color:var(--text-secondary);">📈 Pengeluaran Harian (Quick View)</h4><div class="chart-container" style="height:220px;"><canvas id="dashboardDailyChart"></canvas></div></div>
                     <div class="glass-sm" style="padding:14px 18px;margin-top:12px;display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;">
                         <div><span style="color:var(--text-muted);font-size:0.7rem;">🍽 Budget/Makan</span><br><b>${this.ui.formatRupiah(fm.getSafePerMeal())}</b></div>
-                        <div><span style="color:var(--text-muted);font-size:0.7rem;">🚌 Budget Transport</span><br><b>${this.ui.formatRupiah(fm.getSafeTransport())}</b></div>
+                        <div><span style="color:var(--text-muted);font-size:0.7rem;">🚌 Transport</span><br><b>${this.ui.formatRupiah(fm.getSafeTransport())}</b></div>
                         <div><span style="color:var(--text-muted);font-size:0.7rem;">🆘 Dana Darurat</span><br><b>${this.ui.formatRupiah(fm.getEmergencyReserve())}</b></div>
                         <div><span style="color:var(--text-muted);font-size:0.7rem;">💰 Hari Ini Terpakai</span><br><b>${this.ui.formatRupiah(fm.getTodayExpenses())}</b></div>
                     </div>
                 `;
             }
-
-            // ==================== EXPENSES PAGE ====================
             renderExpenses() {
                 const fm = this.finance;
                 const expenses = fm.expenses;
                 let rows = '';
-                if (expenses.length === 0) {
-                    rows =
-                        `<tr><td colspan="6"><div class="empty-state"><i data-lucide="inbox"></i><p>Belum ada pengeluaran tercatat</p></div></td></tr>`;
-                } else {
+                if (expenses.length === 0) rows = '<tr><td colspan="6"><div class="empty-state"><i data-lucide="inbox"></i><p>Belum ada pengeluaran</p></div></td></tr>';
+                else {
                     expenses.forEach(e => {
-                        rows += `
-                            <tr>
-                                <td>${this.ui.formatDate(e.date)}</td>
-                                <td><b>${e.category || 'Lainnya'}</b></td>
-                                <td>${this.ui.formatRupiah(e.amount)}</td>
-                                <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;">${e.note || '-'}</td>
-                                <td>${e.method || '-'}</td>
-                                <td>
-                                    <button class="btn-danger-sm expense-edit-btn" data-id="${e.id}" style="margin-right:4px;">✏️</button>
-                                    <button class="btn-danger-sm expense-delete-btn" data-id="${e.id}">🗑</button>
-                                </td>
-                            </tr>
-                        `;
+                        rows += `<tr><td>${this.ui.formatDate(e.date)}</td><td><b>${e.category || 'Lainnya'}</b></td><td>${this.ui.formatRupiah(e.amount)}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;">${e.note || '-'}</td><td>${e.method || '-'}</td><td><button class="btn-danger-sm expense-edit-btn" data-id="${e.id}">✏️</button> <button class="btn-danger-sm expense-delete-btn" data-id="${e.id}">🗑</button></td></tr>`;
                     });
                 }
-                return `
-                    <div class="page-header">
-                        <h1>🧾 Catatan Pengeluaran</h1>
-                        <p class="subtitle">Total: ${this.ui.formatRupiah(fm.getTotalExpenses())}</p>
-                        <button class="btn btn-primary btn-sm" id="btnAddExpense" style="margin-top:8px;">+ Tambah Pengeluaran</button>
-                        <button id="fabAddExpense" style="
-  position:fixed; bottom:80px; right:20px; z-index:400;
-  width:56px; height:56px; border-radius:50%; background:var(--accent);
-  color:#fff; border:none; font-size:1.8rem; box-shadow:0 6px 24px var(--accent-glow);
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-" title="Tambah Pengeluaran Cepat">+</button>
-                    </div>
-                    <div class="table-wrap glass-sm">
-                        <table>
-                            <thead><tr><th>Tanggal</th><th>Kategori</th><th>Nominal</th><th>Catatan</th><th>Metode</th><th>Aksi</th></tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
-                `;
+                return `<div class="page-header"><h1>🧾 Catatan Pengeluaran</h1><p class="subtitle">Total: ${this.ui.formatRupiah(fm.getTotalExpenses())}</p><button class="btn btn-primary btn-sm" id="btnAddExpense" style="margin-top:8px;">+ Tambah</button></div><div class="table-wrap glass-sm"><table><thead><tr><th>Tanggal</th><th>Kategori</th><th>Nominal</th><th>Catatan</th><th>Metode</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
-
             showExpenseModal(editId = null) {
                 const fm = this.finance;
                 let existing = null;
-                if (editId) {
-                    existing = fm.expenses.find(e => e.id === editId);
-                }
+                if (editId) existing = fm.expenses.find(e => e.id === editId);
                 const contentHtml = `
                     <div style="display:flex;flex-direction:column;gap:10px;">
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Tanggal</label>
-                            <input type="date" id="expDate" value="${existing ? existing.date : fm.getToday()}"></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Kategori</label>
-                            <select id="expCategory">
-                                ${['Makan', 'Transport', 'Kuliah', 'Nongkrong', 'Tagihan', 'Darurat', 'Lainnya'].map(c => `<option value="${c}" ${existing && existing.category === c ? 'selected' : ''}>${c}</option>`).join('')}
-                            </select></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Nominal (Rp)</label>
-                            <input type="number" id="expAmount" value="${existing ? existing.amount : ''}" placeholder="0" min="1"></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Metode Bayar</label>
-                            <select id="expMethod">
-                                ${['Cash', 'QRIS', 'Transfer', 'GoPay', 'OVO', 'ShopeePay', 'Lainnya'].map(m => `<option value="${m}" ${existing && existing.method === m ? 'selected' : ''}>${m}</option>`).join('')}
-                            </select></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Catatan</label>
-                            <input type="text" id="expNote" value="${existing ? existing.note || '' : ''}" placeholder="Opsional"></div>
+                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Tanggal</label><input type="date" id="expDate" value="${existing ? existing.date : fm.getToday()}"></div>
+                        <div><label>Kategori</label><select id="expCategory">${['Makan', 'Transport', 'Kuliah', 'Nongkrong', 'Tagihan', 'Darurat', 'Lainnya'].map(c => `<option value="${c}" ${existing && existing.category === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+                        <div><label>Nominal (Rp)</label><input type="number" id="expAmount" value="${existing ? existing.amount : ''}" placeholder="0" min="1"></div>
+                        <div><label>Metode Bayar</label><select id="expMethod">${['Cash', 'QRIS', 'Transfer', 'GoPay', 'OVO', 'ShopeePay', 'Lainnya'].map(m => `<option value="${m}" ${existing && existing.method === m ? 'selected' : ''}>${m}</option>`).join('')}</select></div>
+                        <div><label>Catatan</label><input type="text" id="expNote" value="${existing ? existing.note || '' : ''}" placeholder="Opsional"></div>
                     </div>
                 `;
                 this.ui.showModal(existing ? 'Edit Pengeluaran' : 'Tambah Pengeluaran', contentHtml, (overlay) => {
@@ -2251,97 +1713,43 @@
                     const amount = parseInt(overlay.querySelector('#expAmount').value) || 0;
                     const method = overlay.querySelector('#expMethod').value;
                     const note = overlay.querySelector('#expNote').value;
-                    if (!date || amount <= 0) {
-                        this.ui.showToast('Tanggal dan nominal wajib diisi!', 'danger');
-                        return false;
-                    }
-                    if (existing) {
-                        fm.updateExpense(existing.id, { date, category, amount, method, note });
-                        this.ui.showToast('Pengeluaran diperbarui ✅', 'success');
-                    } else {
-                        fm.addExpense({ date, category, amount, method, note });
-                        this.ui.showToast('Pengeluaran ditambahkan 💸', 'info');
-                    }
+                    if (!date || amount <= 0) { this.ui.showToast('Tanggal dan nominal wajib diisi!', 'danger'); return false; }
+                    if (existing) { fm.updateExpense(existing.id, { date, category, amount, method, note }); this.ui.showToast('Diperbarui ✅', 'success'); }
+                    else { fm.addExpense({ date, category, amount, method, note }); this.ui.showToast('Ditambahkan 💸', 'info'); }
                     this.renderPage('expenses');
                 }, existing ? 'Update' : 'Simpan');
             }
-
             async deleteExpense(id) {
                 if (confirm('Hapus pengeluaran ini?')) {
                     await this.finance.deleteExpense(id);
-                    this.ui.showToast('Pengeluaran dihapus 🗑', 'info');
+                    this.ui.showToast('Dihapus 🗑', 'info');
                     this.renderPage('expenses');
                 }
             }
-
-            // ==================== DEBTS PAGE ====================
             renderDebts() {
                 const fm = this.finance;
                 const debts = fm.debts;
                 let rows = '';
-                if (debts.length === 0) {
-                    rows =
-                        `<tr><td colspan="7"><div class="empty-state"><i data-lucide="credit-card"></i><p>Belum ada hutang tercatat</p></div></td></tr>`;
-                } else {
-                    // Sort by priority
+                if (debts.length === 0) rows = '<tr><td colspan="7"><div class="empty-state"><i data-lucide="credit-card"></i><p>Belum ada hutang</p></div></td></tr>';
+                else {
                     const priorityOrder = { high: 0, medium: 1, low: 2 };
-                    const sorted = [...debts].sort((a, b) => (priorityOrder[a.priority] || 3) - (priorityOrder[b
-                        .priority] || 3));
+                    const sorted = [...debts].sort((a, b) => (priorityOrder[a.priority] || 3) - (priorityOrder[b.priority] || 3));
                     sorted.forEach(d => {
                         const remaining = d.amount - (d.paid || 0);
                         const isPaid = d.status === 'paid';
-                        const rowClass = isPaid ? 'text-muted' : '';
-                        const priorityBadge = d.priority === 'high' ?
-                            '<span style="color:#ff5252;font-weight:700;">🔴 Tinggi</span>' :
-                            d.priority === 'medium' ?
-                                '<span style="color:#f9a825;font-weight:600;">🟡 Sedang</span>' :
-                                '<span style="color:#448aff;">🔵 Rendah</span>';
-                        rows += `
-                            <tr class="${rowClass}">
-                                <td><b>${d.name}</b></td>
-                                <td>${this.ui.formatRupiah(d.amount)}</td>
-                                <td>${this.ui.formatRupiah(d.paid || 0)}</td>
-                                <td style="color:${isPaid ? 'var(--success)' : 'var(--danger)'}"><b>${this.ui.formatRupiah(remaining)}</b></td>
-                                <td>${this.ui.formatDate(d.dueDate)}</td>
-                                <td>${priorityBadge}</td>
-                                <td>
-                                    ${isPaid ? '<span class="text-success">✅ Lunas</span>' : `
-                                        <button class="btn-success-sm debt-pay-btn" data-id="${d.id}" style="margin-right:4px;">✅ Lunas</button>
-                                        <button class="btn-danger-sm debt-delete-btn" data-id="${d.id}">🗑</button>
-                                    `}
-                                </td>
-                            </tr>
-                        `;
+                        rows += `<tr class="${isPaid ? 'text-muted' : ''}"><td><b>${d.name}</b></td><td>${this.ui.formatRupiah(d.amount)}</td><td>${this.ui.formatRupiah(d.paid || 0)}</td><td style="color:${isPaid ? 'var(--success)' : 'var(--danger)'}"><b>${this.ui.formatRupiah(remaining)}</b></td><td>${this.ui.formatDate(d.dueDate)}</td><td>${d.priority === 'high' ? '🔴 Tinggi' : d.priority === 'medium' ? '🟡 Sedang' : '🔵 Rendah'}</td><td>${isPaid ? '<span class="text-success">✅ Lunas</span>' : `<button class="btn-success-sm debt-pay-btn" data-id="${d.id}">✅ Lunas</button> <button class="btn-danger-sm debt-delete-btn" data-id="${d.id}">🗑</button>`}</td></tr>`;
                     });
                 }
-                return `
-                    <div class="page-header">
-                        <h1>💳 Manajemen Hutang</h1>
-                        <p class="subtitle">Total: ${this.ui.formatRupiah(fm.getTotalDebtRemaining())} tersisa • ${this.ui.formatRupiah(fm.getTotalDebtPaid())} terbayar</p>
-                        <button class="btn btn-primary btn-sm" id="btnAddDebt" style="margin-top:8px;">+ Tambah Hutang</button>
-                    </div>
-                    <div class="table-wrap glass-sm">
-                        <table>
-                            <thead><tr><th>Nama</th><th>Total</th><th>Terbayar</th><th>Sisa</th><th>Jatuh Tempo</th><th>Prioritas</th><th>Aksi</th></tr></thead>
-                            <tbody>${rows}</tbody>
-                        </table>
-                    </div>
-                `;
+                return `<div class="page-header"><h1>💳 Manajemen Hutang</h1><p class="subtitle">Total tersisa: ${this.ui.formatRupiah(fm.getTotalDebtRemaining())}</p><button class="btn btn-primary btn-sm" id="btnAddDebt">+ Tambah Hutang</button></div><div class="table-wrap glass-sm"><table><thead><tr><th>Nama</th><th>Total</th><th>Terbayar</th><th>Sisa</th><th>Jatuh Tempo</th><th>Prioritas</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table></div>`;
             }
-
             showDebtModal() {
                 const contentHtml = `
                     <div style="display:flex;flex-direction:column;gap:10px;">
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Nama Hutang</label>
-                            <input type="text" id="debtName" placeholder="Contoh: Cicilan Laptop"></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Total (Rp)</label>
-                            <input type="number" id="debtAmount" placeholder="0" min="1"></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Sudah Dibayar (Rp)</label>
-                            <input type="number" id="debtPaid" value="0" min="0"></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Jatuh Tempo</label>
-                            <input type="date" id="debtDueDate"></div>
-                        <div><label style="font-size:0.75rem;color:var(--text-muted);">Prioritas</label>
-                            <select id="debtPriority"><option value="high">🔴 Tinggi</option><option value="medium">🟡 Sedang</option><option value="low">🔵 Rendah</option></select></div>
+                        <div><label>Nama Hutang</label><input type="text" id="debtName" placeholder="Contoh: Cicilan Laptop"></div>
+                        <div><label>Total (Rp)</label><input type="number" id="debtAmount" placeholder="0" min="1"></div>
+                        <div><label>Sudah Dibayar (Rp)</label><input type="number" id="debtPaid" value="0" min="0"></div>
+                        <div><label>Jatuh Tempo</label><input type="date" id="debtDueDate"></div>
+                        <div><label>Prioritas</label><select id="debtPriority"><option value="high">🔴 Tinggi</option><option value="medium">🟡 Sedang</option><option value="low">🔵 Rendah</option></select></div>
                     </div>
                 `;
                 this.ui.showModal('Tambah Hutang', contentHtml, async (overlay) => {
@@ -2350,60 +1758,28 @@
                     const paid = parseInt(overlay.querySelector('#debtPaid').value) || 0;
                     const dueDate = overlay.querySelector('#debtDueDate').value;
                     const priority = overlay.querySelector('#debtPriority').value;
-                    if (!name || amount <= 0) {
-                        this.ui.showToast('Nama dan total wajib diisi!', 'danger');
-                        return false;
-                    }
-                    await this.finance.addDebt({
-                        name, amount, paid, dueDate, priority, status: paid >= amount ?
-                            'paid' : 'unpaid'
-                    });
+                    if (!name || amount <= 0) { this.ui.showToast('Nama dan total wajib diisi!', 'danger'); return false; }
+                    await this.finance.addDebt({ name, amount, paid, dueDate, priority, status: paid >= amount ? 'paid' : 'unpaid' });
                     this.ui.showToast('Hutang ditambahkan 📋', 'info');
                     this.renderPage('debts');
                 });
             }
-
-            async markDebtPaid(id) {
-                if (confirm('Tandai hutang ini sebagai lunas?')) {
-                    await this.finance.markDebtPaid(id);
-                    this.ui.showToast('Hutang dilunasi! 🎉', 'success');
-                    this.renderPage('debts');
-                }
-            }
-
-            async deleteDebt(id) {
-                if (confirm('Hapus hutang ini?')) {
-                    await this.finance.deleteDebt(id);
-                    this.ui.showToast('Hutang dihapus 🗑', 'info');
-                    this.renderPage('debts');
-                }
-            }
-
-            // ==================== ANALYTICS PAGE ====================
+            async markDebtPaid(id) { if (confirm('Tandai lunas?')) { await this.finance.markDebtPaid(id); this.ui.showToast('Lunas! 🎉', 'success'); this.renderPage('debts'); } }
+            async deleteDebt(id) { if (confirm('Hapus hutang?')) { await this.finance.deleteDebt(id); this.ui.showToast('Dihapus', 'info'); this.renderPage('debts'); } }
             renderAnalytics() {
                 const fm = this.finance;
                 const healthScore = this.analytics.getFinancialHealthScore();
                 const dangerous = this.analytics.getMostDangerousCategory();
                 const weeklySummary = fm.getWeeklySummary();
                 const totalExp = fm.getTotalExpenses();
-                const burnRate = fm.getDaysElapsed() > 0 ? Math.round(fm.getTotalExpenses() / fm.getDaysElapsed()) : 0;
-
+                const burnRate = fm.getDaysElapsed() > 0 ? Math.round(totalExp / fm.getDaysElapsed()) : 0;
                 let weeklyHtml = '';
                 for (const [week, amount] of Object.entries(weeklySummary)) {
                     const pct = totalExp > 0 ? Math.round((amount / totalExp) * 100) : 0;
-                    weeklyHtml += `
-                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
-                            <span>${week}</span>
-                            <span><b>${this.ui.formatRupiah(amount)}</b> (${pct}%)</span>
-                        </div>
-                    `;
+                    weeklyHtml += `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);"><span>${week}</span><span><b>${this.ui.formatRupiah(amount)}</b> (${pct}%)</span></div>`;
                 }
-
                 return `
-                    <div class="page-header">
-                        <h1>📈 Analitik & Insight</h1>
-                        <p class="subtitle">Financial Health Score: <b>${healthScore}/100</b></p>
-                    </div>
+                    <div class="page-header"><h1>📈 Analitik & Insight</h1><p class="subtitle">Skor Kesehatan: <b>${healthScore}/100</b></p></div>
                     <div class="cards-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));">
                         <div class="stat-card"><div class="card-label">Total Pengeluaran</div><div class="card-value" style="font-size:1.1rem;">${this.ui.formatRupiah(totalExp)}</div></div>
                         <div class="stat-card"><div class="card-label">Burn Rate/Hari</div><div class="card-value" style="font-size:1.1rem;">${this.ui.formatRupiah(burnRate)}</div></div>
@@ -2411,57 +1787,39 @@
                         <div class="stat-card"><div class="card-label">Hari Berlalu</div><div class="card-value" style="font-size:1.1rem;">${fm.getDaysElapsed()}/${fm.totalDays}</div></div>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;">
-                        <div class="glass-sm" style="padding:16px;">
-                            <h4 style="font-size:0.8rem;margin-bottom:8px;color:var(--text-secondary);">📊 Pengeluaran Harian</h4>
-                            <div class="chart-container" style="height:240px;"><canvas id="dailyChart"></canvas></div>
-                        </div>
-                        <div class="glass-sm" style="padding:16px;">
-                            <h4 style="font-size:0.8rem;margin-bottom:8px;color:var(--text-secondary);">🍩 Kategori Pengeluaran</h4>
-                            <div class="chart-container" style="height:240px;"><canvas id="categoryChart"></canvas></div>
-                        </div>
+                        <div class="glass-sm" style="padding:16px;"><h4 style="font-size:0.8rem;">📊 Pengeluaran Harian</h4><div class="chart-container" style="height:240px;"><canvas id="dailyChart"></canvas></div></div>
+                        <div class="glass-sm" style="padding:16px;"><h4 style="font-size:0.8rem;">🍩 Kategori</h4><div class="chart-container" style="height:240px;"><canvas id="categoryChart"></canvas></div></div>
                     </div>
-                    <div class="glass-sm" style="padding:16px;margin-top:12px;">
-                        <h4 style="font-size:0.8rem;margin-bottom:8px;color:var(--text-secondary);">📅 Ringkasan Mingguan</h4>
-                        ${weeklyHtml || '<p class="text-muted" style="font-size:0.8rem;">Belum ada data</p>'}
-                    </div>
+                    <div class="glass-sm" style="padding:16px;margin-top:12px;"><h4 style="font-size:0.8rem;">📅 Ringkasan Mingguan</h4>${weeklyHtml || '<p class="text-muted">Belum ada data</p>'}</div>
                 `;
             }
-
-            // ==================== SETTINGS PAGE ====================
             renderSettings() {
                 const fm = this.finance;
                 return `
-                    <div class="page-header">
-                        <h1>⚙️ Pengaturan</h1>
-                    </div>
+                    <div class="page-header"><h1>⚙️ Pengaturan</h1></div>
                     <div class="glass-sm" style="padding:20px;margin-bottom:14px;">
-                        <h4 style="margin-bottom:12px;">📝 Data Bulanan</h4>
+                        <h4>📝 Data Bulanan</h4>
                         <div style="display:flex;flex-direction:column;gap:10px;">
-                            <div><label style="font-size:0.75rem;color:var(--text-muted);">Uang Awal Bulan (Rp)</label>
-                                <input type="number" id="setInitialMoney" value="${fm.initialMoney}"></div>
-                            <div><label style="font-size:0.75rem;color:var(--text-muted);">Tanggal Mulai</label>
-                                <input type="date" id="setMonthStart" value="${fm.monthStart}"></div>
-                            <div><label style="font-size:0.75rem;color:var(--text-muted);">Tanggal Akhir</label>
-                                <input type="date" id="setMonthEnd" value="${fm.monthEnd}"></div>
-                            <button class="btn btn-primary btn-sm" id="btnSaveSettings">💾 Simpan Pengaturan</button>
+                            <div><label>Uang Awal (Rp)</label><input type="number" id="setInitialMoney" value="${fm.initialMoney}"></div>
+                            <div><label>Tanggal Mulai</label><input type="date" id="setMonthStart" value="${fm.monthStart}"></div>
+                            <div><label>Tanggal Akhir</label><input type="date" id="setMonthEnd" value="${fm.monthEnd}"></div>
+                            <button class="btn btn-primary btn-sm" id="btnSaveSettings">💾 Simpan</button>
                         </div>
                     </div>
                     <div class="glass-sm" style="padding:20px;margin-bottom:14px;">
-                        <h4 style="margin-bottom:12px;">🔄 Reset Bulan Baru</h4>
-                        <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:8px;">Ini akan mereset semua pengeluaran dan mengembalikan saldo ke uang awal (hutang di-reset ke default).</p>
-                        <button class="btn btn-outline btn-sm" id="btnResetMonth">🔄 Reset Bulan Baru</button>
+                        <h4>🔄 Reset Bulan Baru</h4><p style="font-size:0.75rem;color:var(--text-muted);">Reset semua pengeluaran & hutang ke default.</p>
+                        <button class="btn btn-outline btn-sm" id="btnResetMonth">🔄 Reset Bulan</button>
                     </div>
                     <div class="glass-sm" style="padding:20px;margin-bottom:14px;">
-                        <h4 style="margin-bottom:12px;">💾 Data</h4>
+                        <h4>💾 Data</h4>
                         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <button class="btn btn-outline btn-sm" id="btnExportData">📤 Export Data (JSON)</button>
-                            <button class="btn btn-outline btn-sm" id="btnImportData">📥 Import Data (JSON)</button>
-                            <button class="btn btn-danger-sm" id="btnResetData" style="margin-left:auto;">⚠️ Reset Semua Data</button>
+                            <button class="btn btn-outline btn-sm" id="btnExportData">📤 Export JSON</button>
+                            <button class="btn btn-outline btn-sm" id="btnImportData">📥 Import JSON</button>
+                            <button class="btn btn-danger-sm" id="btnResetData">⚠️ Reset Semua</button>
                         </div>
                     </div>
                 `;
             }
-
             async saveSettings() {
                 const initialMoney = parseInt(document.getElementById('setInitialMoney').value) || 1000000;
                 const monthStart = document.getElementById('setMonthStart').value;
@@ -2477,93 +1835,56 @@
                 this.ui.showToast('Pengaturan disimpan ✅', 'success');
                 this.renderPage('settings');
             }
-
             async exportData() {
                 const data = await this.storage.exportAll();
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = 'surviveu_backup_' + new Date().toISOString().split('T')[0] + '.json';
-                a.click();
+                a.href = url; a.download = 'surviveu_backup.json'; a.click();
                 URL.revokeObjectURL(url);
-                this.ui.showToast('Data diexport! 📤', 'success');
+                this.ui.showToast('Diexport 📤', 'success');
             }
-
             showImportModal() {
-                const contentHtml = `
-                    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;">Pilih file JSON hasil export sebelumnya.</p>
-                    <input type="file" id="importFileInput" accept=".json">
-                `;
+                const contentHtml = `<p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;">Pilih file JSON.</p><input type="file" id="importFileInput" accept=".json">`;
                 this.ui.showModal('Import Data', contentHtml, async (overlay) => {
-                    const fileInput = overlay.querySelector('#importFileInput');
-                    const file = fileInput.files[0];
-                    if (!file) {
-                        this.ui.showToast('Pilih file terlebih dahulu', 'warning');
-                        return false;
-                    }
+                    const file = overlay.querySelector('#importFileInput').files[0];
+                    if (!file) { this.ui.showToast('Pilih file', 'warning'); return false; }
                     try {
                         const text = await file.text();
                         const data = JSON.parse(text);
                         await this.storage.importAll(data);
                         await this.finance.init();
                         this.analytics = new AnalyticsManager(this.finance);
-                        this.ui.showToast('Data berhasil diimport! 📥', 'success');
+                        this.ui.showToast('Berhasil diimport 📥', 'success');
                         this.renderPage('settings');
-                    } catch (e) {
-                        this.ui.showToast('Gagal import: file tidak valid', 'danger');
-                    }
+                    } catch (e) { this.ui.showToast('File tidak valid', 'danger'); }
                 }, 'Import');
             }
-
             async resetAllData() {
-                if (confirm('⚠️ Yakin ingin mereset SEMUA data? Ini tidak bisa dibatalkan!')) {
-                    if (confirm('Terakhir: semua data akan hilang. Lanjutkan?')) {
+                if (confirm('⚠️ Reset SEMUA data?')) {
+                    if (confirm('Terakhir: semua akan hilang.')) {
                         await this.storage.clearAll();
                         await this.finance.init();
                         this.analytics = new AnalyticsManager(this.finance);
-                        this.ui.showToast('Semua data direset 🔄', 'warning');
+                        this.ui.showToast('Semua direset 🔄', 'warning');
                         this.ui.navigateTo('dashboard');
                         this.renderPage('dashboard');
                     }
                 }
             }
-
             async resetMonth() {
-                if (confirm('Reset ke bulan baru? Pengeluaran akan dihapus, saldo kembali ke awal.')) {
+                if (confirm('Reset ke bulan baru? Pengeluaran akan dihapus.')) {
                     await this.finance.resetMonth(this.finance.initialMoney);
                     this.analytics = new AnalyticsManager(this.finance);
-                    this.ui.showToast('Bulan baru dimulai! 🎉', 'success');
+                    this.ui.showToast('Bulan baru! 🎉', 'success');
                     this.ui.navigateTo('dashboard');
                     this.renderPage('dashboard');
                 }
             }
         }
 
-        // ==================== INITIALIZE APP ====================
         const app = new App();
-        document.addEventListener('DOMContentLoaded', () => {
-            app.init();
-        });
-
-        // Global error handler
-        window.addEventListener('error', (e) => {
-            console.error('App error:', e.error);
-            const toastContainer = document.getElementById('toastContainer');
-            if (toastContainer) {
-                const toast = document.createElement('div');
-                toast.className = 'toast toast-danger';
-                toast.textContent = '⚠️ Terjadi kesalahan. Silakan refresh halaman.';
-                toastContainer.appendChild(toast);
-                setTimeout(() => toast.remove(), 4000);
-            }
-        });
-
-        console.log('🚀 SurviveU - Manajemen Keuangan Mahasiswa');
-        console.log('📅 Hari ini: 04 Mei 2026');
-        console.log('💰 Uang awal: Rp1.000.000');
-        console.log('💳 Total hutang default: Rp473.725');
-        console.log('📱 Siap digunakan!');
+        document.addEventListener('DOMContentLoaded', () => app.init());
     </script>
 </body>
 
